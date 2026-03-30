@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neo_brutalism_ui/neo_brutalism_ui.dart';
+import 'pages/inputs_page.dart';
 
 void main() {
   runApp(const NbShowcaseApp());
@@ -44,6 +45,7 @@ class _HomePageState extends State<_HomePage> {
     _DashboardPage(),
     _ComponentsPage(),
     _TypographyPage(),
+    InputsPage(),
   ];
 
   @override
@@ -79,6 +81,12 @@ class _HomePageState extends State<_HomePage> {
                   label: 'Typography',
                   selected: _tab == 2,
                   onTap: () => setState(() => _tab = 2),
+                ),
+                _NavItem(
+                  icon: Icons.input_rounded,
+                  label: 'Inputs',
+                  selected: _tab == 3,
+                  onTap: () => setState(() => _tab = 3),
                 ),
               ],
             ),
@@ -161,8 +169,7 @@ class _DashboardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        NbText.caption('Monday, 30 March 2026',
-                            color: colors.mutedForeground),
+                        NbText.caption('Monday, 30 March 2026', color: colors.mutedForeground),
                         const SizedBox(height: 2),
                         NbText.headline('Good Morning 👋'),
                       ],
@@ -170,8 +177,7 @@ class _DashboardPage extends StatelessWidget {
                   ),
                   NbCard(
                     padding: const EdgeInsets.all(8),
-                    child: Icon(Icons.notifications_outlined,
-                        size: 22, color: colors.foreground),
+                    child: Icon(Icons.notifications_outlined, size: 22, color: colors.foreground),
                   ),
                 ],
               ),
@@ -187,19 +193,15 @@ class _DashboardPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          NbText.titleSmall('Total Revenue',
-                              color: colors.primaryForeground),
+                          NbText.titleSmall('Total Revenue', color: colors.primaryForeground),
                           const SizedBox(height: 4),
-                          NbText.display('Rp 48.2M',
-                              color: colors.primaryForeground),
+                          NbText.display('Rp 48.2M', color: colors.primaryForeground),
                           const SizedBox(height: 8),
                           Row(
                             children: [
-                              Icon(Icons.arrow_upward_rounded,
-                                  size: 14, color: colors.primaryForeground),
+                              Icon(Icons.arrow_upward_rounded, size: 14, color: colors.primaryForeground),
                               const SizedBox(width: 4),
-                              NbText.bodySmall('+12.4% from last month',
-                                  color: colors.primaryForeground),
+                              NbText.bodySmall('+12.4% from last month', color: colors.primaryForeground),
                             ],
                           ),
                         ],
@@ -216,8 +218,7 @@ class _DashboardPage extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      child: Icon(Icons.trending_up_rounded,
-                          size: 32, color: colors.primaryForeground),
+                      child: Icon(Icons.trending_up_rounded, size: 32, color: colors.primaryForeground),
                     ),
                   ],
                 ),
@@ -429,9 +430,7 @@ class _TransactionItem extends StatelessWidget {
               border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
             ),
             child: Icon(
-              transaction.isCredit
-                  ? Icons.arrow_downward_rounded
-                  : Icons.arrow_upward_rounded,
+              transaction.isCredit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
               size: 18,
               color: color,
             ),
@@ -441,17 +440,14 @@ class _TransactionItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                NbText.label(transaction.name,
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                NbText.label(transaction.name, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
                 NbText.caption(transaction.time, color: colors.mutedForeground),
               ],
             ),
           ),
           NbText.label(
-            transaction.isCredit
-                ? '+${transaction.amount}'
-                : '-${transaction.amount}',
+            transaction.isCredit ? '+${transaction.amount}' : '-${transaction.amount}',
             color: color,
             fontWeight: FontWeight.w700,
           ),
@@ -493,9 +489,7 @@ class _TopProductItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        border: isLast
-            ? null
-            : Border(bottom: BorderSide(color: colors.muted, width: 1.5)),
+        border: isLast ? null : Border(bottom: BorderSide(color: colors.muted, width: 1.5)),
       ),
       child: Row(
         children: [
@@ -510,17 +504,14 @@ class _TopProductItem extends StatelessWidget {
             child: Center(
               child: NbText.labelSmall(
                 '$rank',
-                color: rank == 1
-                    ? colors.primaryForeground
-                    : colors.mutedForeground,
+                color: rank == 1 ? colors.primaryForeground : colors.mutedForeground,
                 fontWeight: FontWeight.w800,
               ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: NbText.label(product.name,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            child: NbText.label(product.name, maxLines: 1, overflow: TextOverflow.ellipsis),
           ),
           NbText.label('${product.qty} sold', color: colors.mutedForeground),
         ],
@@ -547,8 +538,7 @@ class _ComponentsPage extends StatelessWidget {
             children: [
               NbText.headline('Components'),
               const SizedBox(height: 4),
-              NbText.body('All components respect the active NbTheme.',
-                  color: colors.mutedForeground),
+              NbText.body('All components respect the active NbTheme.', color: colors.mutedForeground),
               const SizedBox(height: 28),
 
               // ── Buttons ────────────────────────────────────────────────
@@ -585,18 +575,9 @@ class _ComponentsPage extends StatelessWidget {
                       runSpacing: 10,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        NbButton.primary(
-                            label: 'Small',
-                            size: NbButtonSize.small,
-                            onPressed: () {}),
-                        NbButton.primary(
-                            label: 'Medium',
-                            size: NbButtonSize.medium,
-                            onPressed: () {}),
-                        NbButton.primary(
-                            label: 'Large',
-                            size: NbButtonSize.large,
-                            onPressed: () {}),
+                        NbButton.primary(label: 'Small', size: NbButtonSize.small, onPressed: () {}),
+                        NbButton.primary(label: 'Medium', size: NbButtonSize.medium, onPressed: () {}),
+                        NbButton.primary(label: 'Large', size: NbButtonSize.large, onPressed: () {}),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -624,11 +605,9 @@ class _ComponentsPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    NbText.labelSmall('LOADING & FULL WIDTH',
-                        color: colors.mutedForeground),
+                    NbText.labelSmall('LOADING & FULL WIDTH', color: colors.mutedForeground),
                     const SizedBox(height: 12),
-                    NbButton.primary(
-                        label: 'Loading…', onPressed: () {}, isLoading: true),
+                    NbButton.primary(label: 'Loading…', onPressed: () {}, isLoading: true),
                     const SizedBox(height: 8),
                     NbButton.primary(
                       label: 'Full Width Primary',
@@ -654,22 +633,18 @@ class _ComponentsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    NbText.labelSmall('FLAT (default)',
-                        color: colors.mutedForeground),
+                    NbText.labelSmall('FLAT (default)', color: colors.mutedForeground),
                     const SizedBox(height: 10),
                     NbCard(
                       padding: const EdgeInsets.all(14),
-                      child: NbText.body(
-                          'Flat — border only, no shadow. Use for list items and inner content.'),
+                      child: NbText.body('Flat — border only, no shadow. Use for list items and inner content.'),
                     ),
                     const SizedBox(height: 16),
-                    NbText.labelSmall('ELEVATED (hard shadow)',
-                        color: colors.mutedForeground),
+                    NbText.labelSmall('ELEVATED (hard shadow)', color: colors.mutedForeground),
                     const SizedBox(height: 10),
                     NbCard.elevated(
                       padding: const EdgeInsets.all(14),
-                      child: NbText.body(
-                          'Elevated — hard 4px offset shadow. Use for primary content sections.'),
+                      child: NbText.body('Elevated — hard 4px offset shadow. Use for primary content sections.'),
                     ),
                     const SizedBox(height: 16),
                     NbText.labelSmall('FILLED', color: colors.mutedForeground),
@@ -677,27 +652,23 @@ class _ComponentsPage extends StatelessWidget {
                     NbCard.filled(
                       backgroundColor: colors.primary,
                       padding: const EdgeInsets.all(14),
-                      child: NbText.body('Filled — bold background color.',
-                          color: colors.primaryForeground),
+                      child: NbText.body('Filled — bold background color.', color: colors.primaryForeground),
                     ),
                     const SizedBox(height: 8),
                     NbCard.filled(
                       backgroundColor: colors.success,
                       padding: const EdgeInsets.all(14),
-                      child: NbText.body('Success filled.',
-                          color: colors.successForeground),
+                      child: NbText.body('Success filled.', color: colors.successForeground),
                     ),
                     const SizedBox(height: 16),
-                    NbText.labelSmall('TAPPABLE (press animation)',
-                        color: colors.mutedForeground),
+                    NbText.labelSmall('TAPPABLE (press animation)', color: colors.mutedForeground),
                     const SizedBox(height: 10),
                     NbCard.elevated(
                       padding: const EdgeInsets.all(14),
                       onTap: () {},
                       child: Row(
                         children: [
-                          Icon(Icons.touch_app_rounded,
-                              size: 20, color: colors.primary),
+                          Icon(Icons.touch_app_rounded, size: 20, color: colors.primary),
                           const SizedBox(width: 10),
                           NbText.body('Tap me — press into the shadow!'),
                         ],
@@ -738,7 +709,6 @@ class _TypographyPage extends StatelessWidget {
                 color: colors.mutedForeground,
               ),
               const SizedBox(height: 24),
-
               NbCard(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -765,7 +735,6 @@ class _TypographyPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
               NbText.title('Color Palette'),
               const SizedBox(height: 12),
               NbCard(

@@ -99,7 +99,7 @@ class NbButton extends StatefulWidget {
   // ─── Convenience constructors ─────────────────────────────────────────────
 
   const NbButton.primary({
-    super.key,
+    Key? key,
     required String label,
     required VoidCallback? onPressed,
     NbButtonSize size = NbButtonSize.medium,
@@ -108,6 +108,7 @@ class NbButton extends StatefulWidget {
     bool isLoading = false,
     bool isFullWidth = false,
   }) : this(
+          key: key,
           label: label,
           onPressed: onPressed,
           variant: NbButtonVariant.primary,
@@ -119,7 +120,7 @@ class NbButton extends StatefulWidget {
         );
 
   const NbButton.secondary({
-    super.key,
+    Key? key,
     required String label,
     required VoidCallback? onPressed,
     NbButtonSize size = NbButtonSize.medium,
@@ -128,6 +129,7 @@ class NbButton extends StatefulWidget {
     bool isLoading = false,
     bool isFullWidth = false,
   }) : this(
+          key: key,
           label: label,
           onPressed: onPressed,
           variant: NbButtonVariant.secondary,
@@ -139,7 +141,7 @@ class NbButton extends StatefulWidget {
         );
 
   const NbButton.danger({
-    super.key,
+    Key? key,
     required String label,
     required VoidCallback? onPressed,
     NbButtonSize size = NbButtonSize.medium,
@@ -148,6 +150,7 @@ class NbButton extends StatefulWidget {
     bool isLoading = false,
     bool isFullWidth = false,
   }) : this(
+          key: key,
           label: label,
           onPressed: onPressed,
           variant: NbButtonVariant.danger,
@@ -159,7 +162,7 @@ class NbButton extends StatefulWidget {
         );
 
   const NbButton.ghost({
-    super.key,
+    Key? key,
     required String label,
     required VoidCallback? onPressed,
     NbButtonSize size = NbButtonSize.medium,
@@ -168,6 +171,7 @@ class NbButton extends StatefulWidget {
     bool isLoading = false,
     bool isFullWidth = false,
   }) : this(
+          key: key,
           label: label,
           onPressed: onPressed,
           variant: NbButtonVariant.ghost,
