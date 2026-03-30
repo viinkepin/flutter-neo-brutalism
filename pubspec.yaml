@@ -1,0 +1,22 @@
+name: neo_brutalism_ui
+description: >
+  A professional Neo-Brutalism UI component library for Flutter.
+  Bold borders, hard shadows, flat colors — zero extra dependencies.
+version: 0.1.0
+homepage: https://github.com/viinkepin/flutter-neo-brutalism
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
