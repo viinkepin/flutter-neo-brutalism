@@ -42,6 +42,36 @@ final type   = context.nbType;    // NbTypography
 
 ---
 
+## AI-Powered Migration
+
+Already have a Flutter project? Let your AI coding agent do the work.
+
+**Step 1 — Add the package to `pubspec.yaml`:**
+
+```yaml
+dependencies:
+  neo_brutalism_ui:
+    git:
+      url: https://github.com/viinkepin/flutter-neo-brutalism.git
+      ref: main
+```
+
+**Step 2 — Tell your AI agent:**
+
+> "Implement neo brutalism ui"
+
+That's it. The agent will read `AGENTS.md` (included in the package), scan your project, and replace `AppBar`, `ElevatedButton`, `TextField`, `Card`, `Switch`, `Checkbox`, `AlertDialog`, `BottomNavigationBar`, `Drawer`, and all other supported components with their Neo-Brutalism equivalents automatically.
+
+The `AGENTS.md` file contains:
+- A complete **component mapping table** (Flutter Material → NbComponent)
+- Step-by-step **migration protocol** the agent follows
+- **Migration rules** that preserve your existing logic (controllers, callbacks, state)
+- Full **API reference** for every component
+
+Works with Claude Code, Cursor, Copilot, and any agent that reads project files at session start.
+
+---
+
 ## Theme
 
 ### NbThemeData
@@ -807,6 +837,325 @@ NbAutocomplete(
 | `initialValue` | `String?` | — | Pre-fill text |
 | `leading` | `Widget?` | — | Leading icon inside field |
 | `maxSuggestionsHeight` | `double` | `220` | Max dropdown height |
+
+---
+
+## NbDialog
+
+A modal dialog with hard offset shadow. Use `NbDialog.show()` as a one-liner or pass `NbDialog` directly to `showDialog`.
+
+```dart
+// Quick usage
+NbDialog.show(
+  context: context,
+  title: 'Delete Order?',
+  content: const Text('This cannot be undone.'),
+  actions: [
+    NbButton.ghost(label: 'Cancel', onPressed: () => Navigator.pop(context)),
+    NbButton.danger(label: 'Delete', onPressed: () {}),
+  ],
+);
+
+// Full control via showDialog
+showDialog(
+  context: context,
+  builder: (_) => NbDialog(
+    title: 'Custom',
+    content: MyWidget(),
+    showCloseButton: false,
+  ),
+);
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String?` | — | Dialog title |
+| `content` | `Widget?` | — | Body widget (defaults to muted body text style) |
+| `actions` | `List<Widget>?` | — | Row of buttons at the bottom |
+| `showCloseButton` | `bool` | `true` | × button in header |
+
+`NbDialog.show()` also accepts `barrierDismissible` (default `true`).
+
+---
+
+## NbTabBar
+
+A horizontal segmented tab bar. All tabs are equal width by default; use `isScrollable: true` for many tabs.
+
+```dart
+NbTabBar(
+  tabs: const ['Overview', 'Analytics', 'Settings'],
+  selectedIndex: _tab,
+  onChanged: (i) => setState(() => _tab = i),
+)
+
+// Scrollable
+NbTabBar(
+  tabs: const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  selectedIndex: _day,
+  onChanged: (i) => setState(() => _day = i),
+  isScrollable: true,
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `tabs` | `List<String>` | required | Tab labels |
+| `selectedIndex` | `int` | required | Active tab index |
+| `onChanged` | `ValueChanged<int>` | required | Called on tab tap |
+| `isScrollable` | `bool` | `false` | Natural-width tabs in horizontal scroll |
+
+---
+
+## NbAppBar
+
+Top app bar that implements `PreferredSizeWidget` — use as `Scaffold.appBar` or standalone.
+
+Auto back button renders when `Navigator.canPop` is true and `leading` is null.
+
+```dart
+Scaffold(
+  appBar: NbAppBar(
+    title: 'Order Details',
+    actions: [
+      NbAppBarAction(icon: Icons.edit_outlined, onTap: () {}),
+      NbAppBarAction(icon: Icons.notifications_outlined, badge: 3, onTap: () {}),
+    ],
+  ),
+  body: ...,
+)
+
+// With tab bar below title
+NbAppBar(
+  title: 'Reports',
+  bottom: NbTabBar(tabs: ['Daily', 'Weekly'], selectedIndex: _tab, onChanged: ...),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String?` | — | Title text |
+| `leading` | `Widget?` | — | Custom leading widget |
+| `showLeading` | `bool` | `true` | Show leading / auto back button |
+| `centerTitle` | `bool` | `false` | Center the title |
+| `actions` | `List<Widget>?` | — | Right-side action widgets |
+| `bottom` | `PreferredSizeWidget?` | — | Widget placed below toolbar (e.g. `NbTabBar`) |
+| `backgroundColor` | `Color?` | `colors.surface` | Override background |
+
+### NbAppBarAction
+
+Pre-styled icon button for `NbAppBar.actions`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconData` | required | Button icon |
+| `onTap` | `VoidCallback` | required | Tap handler |
+| `badge` | `int?` | — | Badge count on top-right (hidden when 0) |
+
+---
+
+## NbNavBar / NbNavItem
+
+Bottom navigation bar. Use as `Scaffold.bottomNavigationBar`.
+
+```dart
+Scaffold(
+  bottomNavigationBar: NbNavBar(
+    selectedIndex: _tab,
+    onChanged: (i) => setState(() => _tab = i),
+    items: const [
+      NbNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
+      NbNavItem(icon: Icons.search_rounded, label: 'Search', badge: 2),
+      NbNavItem(icon: Icons.person_outline_rounded, label: 'Profile'),
+    ],
+  ),
+  body: ...,
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<NbNavItem>` | required | Nav items |
+| `selectedIndex` | `int` | required | Active item index |
+| `onChanged` | `ValueChanged<int>` | required | Called on item tap |
+
+**NbNavItem** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconData` | required | Default icon |
+| `label` | `String` | required | Label below icon |
+| `activeIcon` | `IconData?` | — | Icon when selected |
+| `badge` | `int?` | — | Badge count on icon |
+
+---
+
+## NbPopupMenuButton / NbPopupMenuItem
+
+A popup context menu that opens an overlay positioned near the tapped widget.
+
+```dart
+NbPopupMenuButton(
+  items: [
+    NbPopupMenuItem(label: 'Edit', icon: Icons.edit_outlined, onTap: () {}),
+    NbPopupMenuItem(label: 'Duplicate', icon: Icons.copy_outlined, onTap: () {}),
+    const NbPopupMenuItem.divider(),
+    NbPopupMenuItem(
+      label: 'Delete',
+      icon: Icons.delete_outlined,
+      isDestructive: true,
+      onTap: () {},
+    ),
+  ],
+  child: Icon(Icons.more_vert_rounded),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<NbPopupMenuItem>` | required | Menu items |
+| `child` | `Widget` | required | Trigger widget |
+| `menuWidth` | `double` | `200` | Width of the popup panel |
+
+**NbPopupMenuItem** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `label` | `String` | required | Item text |
+| `icon` | `IconData?` | — | Leading icon |
+| `onTap` | `VoidCallback?` | — | Tap handler |
+| `isDestructive` | `bool` | `false` | Red label and icon |
+| `enabled` | `bool` | `true` | Greyed-out, non-tappable |
+
+Use `NbPopupMenuItem.divider()` const constructor to insert a horizontal divider.
+
+The menu auto-flips above the trigger when there is not enough space below.
+Dismisses when tapping outside the panel.
+
+---
+
+## NbDrawer
+
+A left navigation drawer. Pass to `Scaffold.drawer` — Flutter handles the swipe gesture, barrier, and slide animation automatically.
+
+```dart
+Scaffold(
+  drawer: NbDrawer(
+    header: NbDrawerHeader(
+      title: 'My App',
+      subtitle: 'user@email.com',
+      avatar: Icon(Icons.person_rounded),
+    ),
+    sections: [
+      NbDrawerSection(items: [
+        NbDrawerItem(
+          icon: Icons.home_rounded,
+          label: 'Home',
+          selected: true,
+          onTap: () => Navigator.pop(context),
+        ),
+        NbDrawerItem(
+          icon: Icons.analytics_rounded,
+          label: 'Analytics',
+          onTap: () {},
+        ),
+      ]),
+      NbDrawerSection(
+        title: 'SETTINGS',
+        items: [
+          NbDrawerItem(
+            icon: Icons.settings_rounded,
+            label: 'Preferences',
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () {},
+          ),
+        ],
+      ),
+    ],
+    footer: NbDrawerItem(
+      icon: Icons.logout_rounded,
+      label: 'Log Out',
+      onTap: () {},
+    ),
+  ),
+  body: ...,
+)
+```
+
+**NbDrawer** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `sections` | `List<NbDrawerSection>` | required | Grouped nav items |
+| `header` | `Widget?` | — | Top header widget. Use `NbDrawerHeader` |
+| `footer` | `NbDrawerItem?` | — | Item pinned at the bottom (e.g. logout) |
+| `width` | `double` | `280` | Drawer panel width |
+
+**NbDrawerSection** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<NbDrawerItem>` | required | Items in this section |
+| `title` | `String?` | — | Uppercase label above the section |
+| `showDivider` | `bool` | `true` | Divider above the section (skipped for first) |
+
+**NbDrawerItem** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `label` | `String` | required | Item label |
+| `icon` | `IconData?` | — | Leading icon |
+| `trailing` | `Widget?` | — | Right-side widget (badge, chevron) |
+| `onTap` | `VoidCallback?` | — | Tap handler |
+| `selected` | `bool` | `false` | Highlighted in primary color |
+| `enabled` | `bool` | `true` | Greyed-out, non-tappable |
+
+**NbDrawerHeader** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String?` | — | App name or user name |
+| `subtitle` | `String?` | — | Email, role, version |
+| `avatar` | `Widget?` | — | Icon, image, or initials widget |
+| `backgroundColor` | `Color?` | `colors.primary` | Header background |
+
+Open programmatically: `Scaffold.of(context).openDrawer()`
+
+---
+
+## NbDatePicker
+
+A scroll-based date picker with three columns: Day | Month | Year. Uses `ListWheelScrollView` for the drum-roll scroll effect.
+
+```dart
+// Bottom sheet (returns DateTime?)
+final date = await NbDatePicker.show(
+  context,
+  initialDate: DateTime.now(),
+  title: 'Select Date',
+  confirmLabel: 'Select',
+);
+if (date != null) setState(() => _date = date);
+
+// Inline widget
+NbDatePicker(
+  initialDate: _date,
+  onChanged: (d) => setState(() => _date = d),
+)
+```
+
+**NbDatePicker** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `initialDate` | `DateTime?` | today | Starting selection |
+| `minDate` | `DateTime?` | 100 years ago | Earliest year shown |
+| `maxDate` | `DateTime?` | 10 years ahead | Latest year shown |
+| `onChanged` | `ValueChanged<DateTime>?` | — | Called on every column change |
+
+**NbDatePicker.show()** extra parameters: `title` (`'Select Date'`), `confirmLabel` (`'Select'`).
+
+Day is automatically clamped when switching to a month with fewer days (e.g. Jan 31 → Feb 28).
 
 ---
 

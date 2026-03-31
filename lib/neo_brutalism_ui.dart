@@ -55,3 +55,10 @@ export 'src/components/nb_chip.dart' show NbChip, NbChipVariant, NbChipGroup, Nb
 export 'src/components/nb_number_stepper.dart' show NbNumberStepper;
 export 'src/components/nb_combobox.dart' show NbCombobox, NbComboboxOption;
 export 'src/components/nb_autocomplete.dart' show NbAutocomplete;
+export 'src/components/nb_dialog.dart' show NbDialog;
+export 'src/components/nb_tab.dart' show NbTabBar;
+export 'src/components/nb_appbar.dart' show NbAppBar, NbAppBarAction;
+export 'src/components/nb_navbar.dart' show NbNavBar, NbNavItem;
+export 'src/components/nb_popup_menu.dart' show NbPopupMenuButton, NbPopupMenuItem;
+export 'src/components/nb_drawer.dart' show NbDrawer, NbDrawerItem, NbDrawerSection, NbDrawerHeader;
+export 'src/components/nb_date_picker.dart' show NbDatePicker;

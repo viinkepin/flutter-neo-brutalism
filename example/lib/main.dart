@@ -53,6 +53,75 @@ class _HomePageState extends State<_HomePage> {
     final colors = context.nbColors;
     return Scaffold(
       backgroundColor: colors.background,
+      drawer: NbDrawer(
+        header: NbDrawerHeader(
+          title: 'Neo Brutalism UI',
+          subtitle: 'Component Library',
+          avatar: const Icon(Icons.widgets_rounded),
+        ),
+        sections: [
+          NbDrawerSection(items: [
+            NbDrawerItem(
+              icon: Icons.dashboard_rounded,
+              label: 'Dashboard',
+              selected: _tab == 0,
+              onTap: () {
+                setState(() => _tab = 0);
+                Navigator.pop(context);
+              },
+            ),
+            NbDrawerItem(
+              icon: Icons.widgets_rounded,
+              label: 'Components',
+              selected: _tab == 1,
+              onTap: () {
+                setState(() => _tab = 1);
+                Navigator.pop(context);
+              },
+            ),
+            NbDrawerItem(
+              icon: Icons.text_fields_rounded,
+              label: 'Typography',
+              selected: _tab == 2,
+              onTap: () {
+                setState(() => _tab = 2);
+                Navigator.pop(context);
+              },
+            ),
+            NbDrawerItem(
+              icon: Icons.input_rounded,
+              label: 'Inputs',
+              selected: _tab == 3,
+              onTap: () {
+                setState(() => _tab = 3);
+                Navigator.pop(context);
+              },
+            ),
+          ]),
+          NbDrawerSection(
+            title: 'RESOURCES',
+            items: [
+              NbDrawerItem(
+                icon: Icons.book_outlined,
+                label: 'Documentation',
+                trailing: const Icon(Icons.open_in_new_rounded),
+                onTap: () => Navigator.pop(context),
+              ),
+              NbDrawerItem(
+                icon: Icons.code_rounded,
+                label: 'GitHub',
+                trailing: const Icon(Icons.open_in_new_rounded),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ],
+        footer: NbDrawerItem(
+          icon: Icons.info_outline_rounded,
+          label: 'v1.0.0',
+          enabled: false,
+        ),
+      ),
       body: _pages[_tab],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -522,8 +591,18 @@ class _TopProductItem extends StatelessWidget {
 
 // ─── Components Page ──────────────────────────────────────────────────────────
 
-class _ComponentsPage extends StatelessWidget {
+class _ComponentsPage extends StatefulWidget {
   const _ComponentsPage();
+
+  @override
+  State<_ComponentsPage> createState() => _ComponentsPageState();
+}
+
+class _ComponentsPageState extends State<_ComponentsPage> {
+  int _tabIndex = 0;
+  int _navIndex = 0;
+  DateTime _pickedDate = DateTime.now();
+  DateTime _inlineDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -540,6 +619,7 @@ class _ComponentsPage extends StatelessWidget {
               const SizedBox(height: 4),
               NbText.body('All components respect the active NbTheme.', color: colors.mutedForeground),
               const SizedBox(height: 28),
+
 
               // ── Buttons ────────────────────────────────────────────────
               NbText.title('Buttons'),
@@ -677,6 +757,436 @@ class _ComponentsPage extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
+
+              // ── AppBar ─────────────────────────────────────────────────
+              NbText.title('AppBar'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(0),
+                child: Column(
+                  children: [
+                    NbAppBar(
+                      title: 'Order Details',
+                      showLeading: false,
+                      actions: [
+                        NbAppBarAction(
+                          icon: Icons.edit_outlined,
+                          onTap: () {},
+                        ),
+                        NbAppBarAction(
+                          icon: Icons.notifications_outlined,
+                          badge: 3,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: NbText.body(
+                        'NbAppBar implements PreferredSizeWidget — use as Scaffold.appBar or standalone.',
+                        color: colors.mutedForeground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Tab ────────────────────────────────────────────────────
+              NbText.title('Tabs'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('EQUAL WIDTH', color: colors.mutedForeground),
+                    const SizedBox(height: 10),
+                    NbTabBar(
+                      tabs: const ['Overview', 'Analytics', 'Settings'],
+                      selectedIndex: _tabIndex,
+                      onChanged: (i) => setState(() => _tabIndex = i),
+                    ),
+                    const SizedBox(height: 16),
+                    NbText.labelSmall('SCROLLABLE', color: colors.mutedForeground),
+                    const SizedBox(height: 10),
+                    NbTabBar(
+                      tabs: const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                      selectedIndex: _tabIndex % 7,
+                      onChanged: (i) => setState(() => _tabIndex = i),
+                      isScrollable: true,
+                    ),
+                    const SizedBox(height: 16),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 150),
+                      child: NbCard.filled(
+                        key: ValueKey(_tabIndex),
+                        backgroundColor: colors.muted,
+                        padding: const EdgeInsets.all(14),
+                        child: NbText.body(
+                          'Content for tab ${(_tabIndex % 3) + 1}',
+                          color: colors.mutedForeground,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── NavBar ─────────────────────────────────────────────────
+              NbText.title('NavBar'),
+              const SizedBox(height: 12),
+              Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(context.nbTheme.borderRadius),
+                  border: Border.all(color: colors.border, width: context.nbTheme.borderWidth),
+                ),
+                child: Column(
+                  children: [
+                    NbNavBar(
+                      selectedIndex: _navIndex,
+                      onChanged: (i) => setState(() => _navIndex = i),
+                      items: const [
+                        NbNavItem(
+                          icon: Icons.home_outlined,
+                          activeIcon: Icons.home_rounded,
+                          label: 'Home',
+                        ),
+                        NbNavItem(
+                          icon: Icons.search_rounded,
+                          label: 'Search',
+                          badge: 2,
+                        ),
+                        NbNavItem(
+                          icon: Icons.receipt_long_outlined,
+                          activeIcon: Icons.receipt_long_rounded,
+                          label: 'Orders',
+                        ),
+                        NbNavItem(
+                          icon: Icons.person_outline_rounded,
+                          activeIcon: Icons.person_rounded,
+                          label: 'Profile',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Dialog ─────────────────────────────────────────────────
+              NbText.title('Dialog'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('VARIANTS', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        NbButton.secondary(
+                          label: 'Info Dialog',
+                          onPressed: () => NbDialog.show(
+                            context: context,
+                            title: 'What is Neo-Brutalism?',
+                            content: const Text(
+                              'A design style using thick borders, hard shadows, flat colors, and bold typography. No gradients. No blur.',
+                            ),
+                          ),
+                        ),
+                        NbButton.danger(
+                          label: 'Confirm Delete',
+                          onPressed: () => NbDialog.show(
+                            context: context,
+                            title: 'Delete Order?',
+                            content: const Text(
+                                'This action cannot be undone. The order and all associated data will be permanently removed.'),
+                            actions: [
+                              NbButton.ghost(
+                                label: 'Cancel',
+                                size: NbButtonSize.small,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              NbButton.danger(
+                                label: 'Delete',
+                                size: NbButtonSize.small,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        NbButton.primary(
+                          label: 'Success',
+                          onPressed: () => NbDialog.show(
+                            context: context,
+                            title: 'Order Placed!',
+                            showCloseButton: false,
+                            content: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('Your order #ORD-2048 has been confirmed.'),
+                                const SizedBox(height: 12),
+                                NbCard.filled(
+                                  backgroundColor: colors.success.withValues(alpha: 0.12),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(children: [
+                                    Icon(Icons.check_circle_rounded, color: colors.success, size: 18),
+                                    const SizedBox(width: 8),
+                                    NbText.label('Estimated delivery: 30 min', color: colors.success),
+                                  ]),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              NbButton.primary(
+                                label: 'View Order',
+                                size: NbButtonSize.small,
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Popup Menu ─────────────────────────────────────────────
+              NbText.title('Popup Menu'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('TAP THE ··· BUTTON', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: NbCard(
+                            padding: const EdgeInsets.all(14),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: colors.primary,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(color: colors.border, width: 2),
+                                  ),
+                                  child: Icon(Icons.fastfood_rounded, size: 18, color: colors.primaryForeground),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(child: NbText.label('Ayam Geprek Combo')),
+                                NbPopupMenuButton(
+                                  items: [
+                                    NbPopupMenuItem(
+                                      label: 'Edit',
+                                      icon: Icons.edit_outlined,
+                                      onTap: () {},
+                                    ),
+                                    NbPopupMenuItem(
+                                      label: 'Duplicate',
+                                      icon: Icons.copy_outlined,
+                                      onTap: () {},
+                                    ),
+                                    const NbPopupMenuItem.divider(),
+                                    NbPopupMenuItem(
+                                      label: 'Delete',
+                                      icon: Icons.delete_outlined,
+                                      isDestructive: true,
+                                      onTap: () {},
+                                    ),
+                                  ],
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: colors.muted,
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: colors.border, width: 2),
+                                    ),
+                                    child: Icon(Icons.more_horiz_rounded, size: 16, color: colors.foreground),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        NbText.caption('With disabled item:', color: colors.mutedForeground),
+                        const SizedBox(width: 8),
+                        NbPopupMenuButton(
+                          items: [
+                            NbPopupMenuItem(
+                              label: 'Share',
+                              icon: Icons.share_outlined,
+                              onTap: () {},
+                            ),
+                            NbPopupMenuItem(
+                              label: 'Archive',
+                              icon: Icons.archive_outlined,
+                              enabled: false,
+                              onTap: () {},
+                            ),
+                            const NbPopupMenuItem.divider(),
+                            NbPopupMenuItem(
+                              label: 'Remove',
+                              icon: Icons.remove_circle_outline_rounded,
+                              isDestructive: true,
+                              onTap: () {},
+                            ),
+                          ],
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: colors.muted,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: colors.border, width: 2),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                NbText.label('Options'),
+                                const SizedBox(width: 4),
+                                Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: colors.foreground),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Drawer ─────────────────────────────────────────────────
+              NbText.title('Drawer'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.body(
+                      'Swipe from the left edge or tap the button below to open the NbDrawer.',
+                      color: colors.mutedForeground,
+                    ),
+                    const SizedBox(height: 14),
+                    NbButton.secondary(
+                      label: 'Open Drawer',
+                      leading: const Icon(Icons.menu_rounded),
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    ),
+                    const SizedBox(height: 12),
+                    NbText.caption(
+                      'The drawer in this app shows all 4 pages with section labels and a footer.',
+                      color: colors.mutedForeground,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Date Picker ────────────────────────────────────────────
+              NbText.title('Date Picker'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('BOTTOM SHEET', color: colors.mutedForeground),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: NbCard(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            child: Row(
+                              children: [
+                                Icon(Icons.calendar_today_rounded, size: 16, color: colors.mutedForeground),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: NbText.label(
+                                    '${_pickedDate.day.toString().padLeft(2, '0')} '
+                                    '${_monthNames[_pickedDate.month - 1]} '
+                                    '${_pickedDate.year}',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        NbButton.primary(
+                          label: 'Pick',
+                          size: NbButtonSize.small,
+                          onPressed: () async {
+                            final d = await NbDatePicker.show(
+                              context,
+                              initialDate: _pickedDate,
+                            );
+                            if (d != null) setState(() => _pickedDate = d);
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    NbText.labelSmall('INLINE', color: colors.mutedForeground),
+                    const SizedBox(height: 10),
+                    NbCard(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          NbDatePicker(
+                            initialDate: _inlineDate,
+                            onChanged: (d) => setState(() => _inlineDate = d),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: colors.muted,
+                              borderRadius: BorderRadius.circular(context.nbTheme.borderRadius),
+                              border: Border.all(color: colors.border, width: context.nbTheme.borderWidth),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.event_rounded, size: 14, color: colors.mutedForeground),
+                                const SizedBox(width: 6),
+                                NbText.label(
+                                  '${_inlineDate.day.toString().padLeft(2, '0')} '
+                                  '${_monthNames[_inlineDate.month - 1]} '
+                                  '${_inlineDate.year}',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 40),
             ],
           ),
@@ -685,6 +1195,11 @@ class _ComponentsPage extends StatelessWidget {
     );
   }
 }
+
+const _monthNames = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 // ─── Typography Page ──────────────────────────────────────────────────────────
 

@@ -61,9 +61,12 @@ class NbCheckbox extends StatelessWidget {
     void handleTap() {
       if (!isEnabled) return;
       if (tristate) {
-        if (value == false) onChanged!(null);
-        else if (value == null) onChanged!(true);
-        else onChanged!(false);
+        if (value == false)
+          onChanged!(null);
+        else if (value == null)
+          onChanged!(true);
+        else
+          onChanged!(false);
       } else {
         onChanged!(!isChecked);
       }

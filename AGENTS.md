@@ -4,6 +4,206 @@ Reference guide for AI agents working with the `neo_brutalism_ui` Flutter packag
 
 ---
 
+## AI Migration Protocol
+
+> **Trigger phrases:** "implement neo brutalism ui", "migrate to neo brutalism", "apply neo brutalism", "replace components with neo brutalism ui"
+
+When you receive one of these instructions, execute the following steps in order. Do not ask the user for clarification — read the project and proceed.
+
+---
+
+### Step 1 — Install the package
+
+Add to `pubspec.yaml` under `dependencies`:
+
+```yaml
+dependencies:
+  neo_brutalism_ui:
+    git:
+      url: https://github.com/viinkepin/flutter-neo-brutalism.git
+      ref: main
+```
+
+Then run:
+```bash
+flutter pub get
+```
+
+---
+
+### Step 2 — Wrap the app with NbTheme
+
+Find the root widget (usually `main.dart` where `MaterialApp` or `runApp` is called).
+Wrap `MaterialApp` (or `CupertinoApp`) with `NbTheme`:
+
+```dart
+import 'package:neo_brutalism_ui/neo_brutalism_ui.dart';
+
+// Before
+runApp(MaterialApp(home: MyApp()));
+
+// After
+runApp(
+  NbTheme(
+    data: NbThemeData.light(
+      colorScheme: NbColorScheme.light(
+        primary: Color(0xFFFDE047), // keep or replace with project's brand color
+      ),
+    ),
+    child: MaterialApp(home: MyApp()),
+  ),
+);
+```
+
+**Brand color selection:** If the project has an existing primary color in `ThemeData`, extract it and pass it to `NbColorScheme.light(primary: ...)`. If no brand color is defined, default to `Color(0xFFFDE047)` (yellow).
+
+---
+
+### Step 3 — Scan the project
+
+Use grep or file search to find all `.dart` files under `lib/`. For each file, look for components listed in the **Component Mapping Table** below. Build a list:
+
+```
+FILE                         COMPONENT FOUND              NB REPLACEMENT
+lib/screens/login_page.dart  ElevatedButton               NbButton.primary
+lib/screens/login_page.dart  TextField                    NbTextField
+lib/widgets/app_bar.dart     AppBar                       NbAppBar
+...
+```
+
+---
+
+### Step 4 — Execute replacements file by file
+
+For each file in your list, replace the Flutter/Material component with its NbComponent equivalent using the mapping table below. Follow the **Rules** below the table.
+
+---
+
+### Step 5 — Verify
+
+Run `flutter analyze` after all replacements. Fix any errors before finishing.
+
+---
+
+## Component Mapping Table
+
+> Left column = what to look for in the project. Right column = what to replace it with.
+> "Skip" means leave it as-is — no NbComponent equivalent exists.
+
+### Navigation & Layout
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `AppBar(...)` | `NbAppBar(title: '...', actions: [...])` | `NbAppBar` implements `PreferredSizeWidget`; use as `Scaffold.appBar` directly |
+| `SliverAppBar(...)` | `NbAppBar(...)` | Use `NbAppBar` inside `CustomScrollView > SliverToBoxAdapter`; `SliverAppBar` has no NbComponent |
+| `BottomNavigationBar(...)` | `NbNavBar(items: [...], selectedIndex: ..., onChanged: ...)` | Replace `BottomNavigationBarItem` with `NbNavItem` |
+| `NavigationBar(...)` | `NbNavBar(...)` | Same as above |
+| `Drawer(child: ListView(...))` | `NbDrawer(sections: [...], header: NbDrawerHeader(...))` | Extract `ListTile` items → `NbDrawerItem`; extract header widget → `NbDrawerHeader` |
+| `TabBar(...)` + `DefaultTabController` | `NbTabBar(tabs: [...], selectedIndex: ..., onChanged: ...)` | Manage tab index in `setState` instead of `DefaultTabController` |
+| `NavigationRail(...)` | Skip | No NbComponent equivalent |
+
+### Buttons
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `ElevatedButton(...)` | `NbButton.primary(label: '...', onPressed: ...)` | |
+| `OutlinedButton(...)` | `NbButton.secondary(label: '...', onPressed: ...)` | |
+| `TextButton(...)` | `NbButton.ghost(label: '...', onPressed: ...)` | |
+| `FilledButton(...)` | `NbButton.primary(label: '...', onPressed: ...)` | |
+| `ElevatedButton.icon(...)` | `NbButton.primary(label: '...', leading: Icon(...), onPressed: ...)` | |
+| `IconButton(...)` in AppBar actions | `NbAppBarAction(icon: ..., onTap: ...)` | Only for AppBar; keep bare `IconButton` elsewhere if no nb equivalent fits |
+| `FloatingActionButton(...)` | `NbButton.primary(...)` with `isFullWidth: false` inside a `Positioned` | No direct FAB equivalent; use `NbButton.primary` + manual positioning |
+| `PopupMenuButton(...)` | `NbPopupMenuButton(items: [...], child: ...)` | Replace `PopupMenuItem` with `NbPopupMenuItem` |
+
+### Cards & Containers
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `Card(child: ...)` | `NbCard(child: ...)` | Flat card; no shadow |
+| `Card(elevation: >0, child: ...)` | `NbCard.elevated(child: ...)` | Has hard 4px shadow |
+| `Card(color: someColor, child: ...)` | `NbCard.filled(backgroundColor: someColor, child: ...)` | |
+| `InkWell(onTap: ..., child: Card(...))` | `NbCard.elevated(onTap: ..., child: ...)` | Tappable card with press animation |
+| Custom container with `BoxDecoration` border | Keep as-is OR rebuild with `NbCard` | Replace only if the container acts as a card/list item |
+
+### Text
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `Text('...', style: TextStyle(fontSize: 28+, fontWeight: FontWeight.bold))` | `NbText.headline('...')` or `NbText.display('...')` | Match by size: 36+=display, 28-35=headline, 20-27=title, 16-19=titleSmall |
+| `Text('...', style: TextStyle(fontSize: 13-15))` | `NbText.body('...')` | |
+| `Text('...', style: TextStyle(fontSize: 10-12))` | `NbText.caption('...')` or `NbText.bodySmall('...')` | |
+| `Text('...', style: Theme.of(context).textTheme.labelLarge)` | `NbText.label('...')` | |
+| Plain `Text('...')` with no style | `NbText.body('...')` | Only replace where it's visible UI content, not utility text |
+| `RichText(...)` | Keep as-is | No NbComponent equivalent |
+
+### Form inputs
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `TextField(decoration: InputDecoration(labelText: '...'))` | `NbTextField(label: '...', controller: ..., hint: '...')` | |
+| `TextFormField(...)` | `NbTextField(...)` | If inside a `Form`, keep `Form` but replace the field widget; note NbTextField does not use `validator` — validate manually in `onChanged` or on submit |
+| `TextField(maxLines: null)` or `maxLines: > 1` | `NbTextareaField(...)` | Use `NbTextareaField` not `NbTextarea` |
+| `Switch(...)` | `NbSwitch(value: ..., onChanged: ...)` | |
+| `SwitchListTile(...)` | `Row(mainAxisAlignment: spaceBetween, children: [NbText.body('...'), NbSwitch(...)])` | SwitchListTile has no direct equivalent; use this pattern |
+| `Checkbox(...)` | `NbCheckbox(value: ..., onChanged: ...)` | |
+| `CheckboxListTile(...)` | `NbCheckbox(value: ..., label: '...', onChanged: ...)` | |
+| `Radio(...)` | `NbRadio(value: ..., groupValue: ..., onChanged: ...)` | |
+| `RadioListTile(...)` | `NbRadioGroup(options: [...], groupValue: ..., onChanged: ...)` | Group multiple radio options |
+| `DropdownButton(...)` | `NbSelect(options: [...], value: ..., onChanged: ...)` | Opens bottom sheet — not an inline dropdown |
+| `DropdownButtonFormField(...)` | `NbSelect(...)` or `NbCombobox(...)` | Use `NbCombobox` if the list is long and needs search |
+| `Autocomplete(...)` | `NbAutocomplete(options: [...], onSelected: ..., onChanged: ...)` | |
+| `FilterChip(...)` / `InputChip(...)` / `Chip(...)` | `NbChip(...)` or `NbChipGroup(options: [...])` | Match variant: filter=selectable, input=removable, display=read-only |
+| `showDatePicker(...)` | `await NbDatePicker.show(context, initialDate: ...)` | Returns `DateTime?` — same as `showDatePicker` |
+| Custom increment/decrement row | `NbNumberStepper(value: ..., onChanged: ...)` | |
+| `ExpansionTile(...)` | `NbAccordion(title: '...', child: ...)` | |
+| `ExpansionPanelList(...)` | `NbAccordionGroup(items: [...])` | |
+
+### Dialogs & Overlays
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| `showDialog(builder: (_) => AlertDialog(...))` | `NbDialog.show(context: context, title: '...', content: ..., actions: [...])` | |
+| `AlertDialog(...)` | `NbDialog(title: '...', content: ..., actions: [...])` | Use inside `showDialog` |
+| `SimpleDialog(...)` | `NbDialog(content: ..., showCloseButton: true)` | |
+| `SnackBar(...)` / `ScaffoldMessenger.showSnackBar(...)` | Skip | No NbComponent equivalent — keep as-is |
+| `BottomSheet(...)` / `showModalBottomSheet(...)` | Skip unless replacing with NbSelect/NbCombobox | Keep custom bottom sheets as-is |
+| `Tooltip(...)` | Skip | No NbComponent equivalent |
+
+### Upload / Media
+
+| Found in project | Replace with | Notes |
+|---|---|---|
+| Custom file upload button/zone | `NbFileUpload(onTap: ..., fileName: ...)` | UI only — keep existing file picker logic in `onTap` |
+| Custom avatar/image upload | `NbPhotoUpload(hasImage: ..., imageChild: ..., onTap: ...)` | UI only — keep existing image picker logic in `onTap` |
+
+---
+
+## Migration Rules
+
+Follow these rules when executing replacements:
+
+1. **Never remove existing logic** — only replace the widget layer. Keep `onPressed` callbacks, state variables, controllers, and validators intact.
+
+2. **Preserve existing controllers** — `TextEditingController`, `FocusNode`, `ScrollController` etc. are passed directly to NbComponents unchanged.
+
+3. **Form validation** — `TextFormField` with `validator:` has no direct equivalent. Replace the widget with `NbTextField` and move validation to `onChanged` + a state variable for `errorText`, OR keep a `Form` widget and use `NbTextField` inside it (the `Form` will still work since `NbTextField` internally uses `TextField`).
+
+4. **Theme colors** — extract the project's primary color from `ThemeData.colorScheme.primary` or `primaryColor` and pass it to `NbColorScheme.light(primary: ...)`. For secondary color: pass to `secondary:`. Keep other colors as-is.
+
+5. **`isFullWidth` in Row** — whenever replacing a button inside a `Row`, wrap with `Expanded`. Never use `isFullWidth: true` directly inside a `Row`.
+
+6. **Skip when no equivalent** — if a component has no NbComponent equivalent (Tooltip, SnackBar, SliverAppBar, NavigationRail, etc.), leave it as-is. Do not build custom replacements unless the user asks.
+
+7. **Drawer with `ListTile`** — when replacing `Drawer`, group `ListTile` items by their visual sections (dividers, headers) into `NbDrawerSection` objects. Map each `ListTile` to `NbDrawerItem`. The header widget (UserAccountsDrawerHeader or custom) becomes `NbDrawerHeader`.
+
+8. **Text replacement scope** — only replace `Text` widgets that are clearly content/UI text (labels, titles, descriptions). Do NOT replace `Text` inside existing custom widget internals that you are not refactoring.
+
+9. **`NbAppBar.showLeading: false`** — set on the root/home page where there is no back navigation. On all other pages leave at default `true` so the auto back button works.
+
+10. **One file at a time** — process files sequentially. Run `flutter analyze` after every 5–10 files to catch errors early.
+
+---
+
 ## Project Structure
 
 ```
@@ -31,6 +231,13 @@ lib/
       nb_number_stepper.dart     # NbNumberStepper
       nb_combobox.dart           # NbCombobox, NbComboboxOption
       nb_autocomplete.dart       # NbAutocomplete
+      nb_dialog.dart             # NbDialog
+      nb_tab.dart                # NbTabBar
+      nb_appbar.dart             # NbAppBar, NbAppBarAction
+      nb_navbar.dart             # NbNavBar, NbNavItem
+      nb_popup_menu.dart         # NbPopupMenuButton, NbPopupMenuItem
+      nb_drawer.dart             # NbDrawer, NbDrawerItem, NbDrawerSection, NbDrawerHeader
+      nb_date_picker.dart        # NbDatePicker
 example/
   lib/
     main.dart                    # Full showcase app (Dashboard, Components, Typography tabs)
@@ -472,6 +679,158 @@ NbAutocomplete(
 
 ---
 
+### NbDialog
+
+```dart
+NbDialog.show(
+  context: context,
+  title: 'Confirm',
+  content: const Text('Sure?'),
+  actions: [
+    NbButton.ghost(label: 'Cancel', onPressed: () => Navigator.pop(context)),
+    NbButton.danger(label: 'Delete', onPressed: () {}),
+  ],
+);
+```
+
+- `content` widget is wrapped in `DefaultTextStyle` with `typography.body + mutedForeground`
+- `showCloseButton: false` hides the × — useful when actions already provide exit
+- Dialog has hard 4px shadow — one of the few overlay components that uses shadow
+
+---
+
+### NbTabBar
+
+```dart
+NbTabBar(
+  tabs: const ['Tab A', 'Tab B', 'Tab C'],
+  selectedIndex: _tab,
+  onChanged: (i) => setState(() => _tab = i),
+)
+```
+
+- Selected tab: white surface + border; unselected: transparent on muted background
+- `isScrollable: false` (default): all tabs are `Expanded` — equal width
+- `isScrollable: true`: tabs are natural width inside a `SingleChildScrollView`
+- Use `AnimatedSwitcher` or `IndexedStack` to swap content based on `selectedIndex`
+
+---
+
+### NbAppBar
+
+Implements `PreferredSizeWidget` — pass directly to `Scaffold.appBar`:
+
+```dart
+Scaffold(
+  appBar: NbAppBar(
+    title: 'Page Title',
+    actions: [NbAppBarAction(icon: Icons.more_vert_rounded, onTap: () {})],
+  ),
+)
+```
+
+- Auto back button rendered when `Navigator.canPop(context)` is true and `leading` is null
+- `showLeading: false` disables auto back button (use on root pages)
+- `bottom` accepts any `PreferredSizeWidget` — wrap `NbTabBar` in `PreferredSize` if needed (NbTabBar itself doesn't implement PreferredSizeWidget — use `PreferredSize(preferredSize: Size.fromHeight(44), child: NbTabBar(...))`)
+- `NbAppBarAction` has optional `badge` (red dot with count); hidden when `badge == 0`
+
+---
+
+### NbNavBar
+
+```dart
+Scaffold(
+  bottomNavigationBar: NbNavBar(
+    selectedIndex: _tab,
+    onChanged: (i) => setState(() => _tab = i),
+    items: const [
+      NbNavItem(icon: Icons.home_outlined, activeIcon: Icons.home_rounded, label: 'Home'),
+      NbNavItem(icon: Icons.search_rounded, label: 'Search', badge: 5),
+    ],
+  ),
+)
+```
+
+- Handles `SafeArea` bottom padding internally
+- `badge` shown as small red pill on icon; hidden when null or 0
+- Selected item: primary-colored pill container; unselected: transparent
+
+---
+
+### NbPopupMenuButton
+
+```dart
+NbPopupMenuButton(
+  items: [
+    NbPopupMenuItem(label: 'Edit', icon: Icons.edit_outlined, onTap: () {}),
+    const NbPopupMenuItem.divider(),
+    NbPopupMenuItem(label: 'Delete', isDestructive: true, onTap: () {}),
+  ],
+  child: Icon(Icons.more_vert_rounded),
+)
+```
+
+- Menu auto-positions below button; flips above when insufficient space below
+- Menu right-aligns to the button's right edge by default; clamped to screen bounds
+- Dismissed by tapping outside the panel OR by the item's own `onTap` (which calls `Navigator.pop` then the callback)
+- `enabled: false` items are greyed out and non-tappable
+- `isDestructive: true` renders label + icon in `colors.danger`
+- `menuWidth` default is 200px — override for longer labels
+
+---
+
+### NbDrawer
+
+Pass to `Scaffold.drawer` — Flutter handles slide animation, swipe-to-open gesture, and barrier tap automatically.
+
+```dart
+Scaffold(
+  drawer: NbDrawer(
+    header: NbDrawerHeader(title: 'App', subtitle: 'user@email.com', avatar: Icon(Icons.person_rounded)),
+    sections: [
+      NbDrawerSection(items: [
+        NbDrawerItem(icon: Icons.home_rounded, label: 'Home', selected: _tab == 0, onTap: () {
+          setState(() => _tab = 0);
+          Navigator.pop(context);  // close drawer
+        }),
+      ]),
+      NbDrawerSection(title: 'SETTINGS', items: [
+        NbDrawerItem(icon: Icons.settings_rounded, label: 'Preferences', onTap: () {}),
+      ]),
+    ],
+    footer: NbDrawerItem(icon: Icons.logout_rounded, label: 'Log Out', onTap: () {}),
+  ),
+)
+```
+
+Open programmatically: `Scaffold.of(context).openDrawer()`
+
+- Selected item: primary-colored background + border
+- `showDivider: false` on a section hides the divider above it
+- `trailing` widget on item: icon-themed to `mutedForeground` at 16px
+
+---
+
+### NbDatePicker
+
+```dart
+// Bottom sheet
+final date = await NbDatePicker.show(context, initialDate: _date);
+if (date != null) setState(() => _date = date);
+
+// Inline
+NbDatePicker(initialDate: _date, onChanged: (d) => setState(() => _date = d))
+```
+
+- 3 scroll columns: Day (1–31) | Month (January–December) | Year (range)
+- `diameterRatio: 8` + `perspective: 0.002` = nearly flat wheel (not 3D)
+- Top/bottom fade via `ShaderMask`-style gradient overlay
+- Center line highlight via `IgnorePointer` border strip
+- Day auto-clamps when switching to shorter month (animates to last valid day)
+- Year range: `minDate?.year ?? now-100` to `maxDate?.year ?? now+10`
+
+---
+
 ## Common Patterns
 
 ### Page scaffold pattern
@@ -578,6 +937,13 @@ NbCard(
 | Situation | Problem | Fix |
 |---|---|---|
 | `NbButton(isFullWidth: true)` inside `Row` | Infinite width error | Wrap button in `Expanded` |
+| `NbDrawer` used outside `Scaffold` | `Scaffold.of(context).openDrawer()` throws | Ensure the calling context is a descendant of the `Scaffold` with the drawer |
+| `NbDatePicker` inline in a `Column` | Takes `44 × 5 = 220px` fixed height | Wrap in `SizedBox(height: 220)` if the parent is unbounded |
+| `NbDatePicker.show()` returns null | User dismissed without tapping confirm (or tapped ×) | Always null-check the return value |
+| `NbNavBar` inside a rounded `NbCard` | Top border corners appear disconnected | Wrap `NbNavBar` in `Container` with `clipBehavior: Clip.hardEdge` + same `borderRadius` |
+| `NbTabBar` as `NbAppBar.bottom` | `NbTabBar` doesn't implement `PreferredSizeWidget` | Wrap in `PreferredSize(preferredSize: Size.fromHeight(44), child: NbTabBar(...))` |
+| `NbPopupMenuButton` reopens on dismiss | Barrier tap propagates to button | Built-in 250ms cooldown handles this automatically |
+| `NbAppBar` on root page shows back button | `Navigator.canPop` is true inside nested navigators | Set `showLeading: false` on root-level pages |
 | `NbCombobox` vs `NbSelect` | Both open bottom sheets but look different | `NbCombobox` has search icon + search bar; `NbSelect` has chevron icon; use `NbCombobox` for long lists needing search |
 | `NbAutocomplete` options not updating | Dropdown shows stale results | `NbAutocomplete` is stateless — call `setState` in `onChanged` to push new `options` list |
 | `NbChipGroup` single-select mode | All chips deselectable | Set `multiSelect: false` — but user can still deselect all; manage minimum selection in `onChanged` if needed |
@@ -612,11 +978,12 @@ Bold, saturated solid colors only. No gradients, no glassmorphism.
 
 - Charts / graphs
 - Data tables
-- Navigation drawer
 - Snackbar / Toast
-- Date/time picker
+- Time picker (date picker exists via `NbDatePicker`)
 - Image cropper
+- Navigation rail / side rail
+- Tooltip
 - Inline dropdown for select-only (use `NbAutocomplete` for free-form + suggestions; use `NbCombobox`/`NbSelect` for strict selection via bottom sheet)
-- File picker logic (NbFileUpload / NbPhotoUpload are UI-only)
+- File picker logic (NbFileUpload / NbPhotoUpload are UI-only — wire `onTap` to any file picker package)
 
 For missing components, build them using `NbCard`, `NbText`, and raw Flutter widgets, following the design token rules above.
