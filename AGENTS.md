@@ -31,10 +31,34 @@ flutter pub get
 
 ---
 
-### Step 2 — Wrap the app with NbTheme
+### Step 2 — Extract the project's color palette
+
+Before writing the `NbTheme` wrapper, scan the project for existing colors. This is the only place where you read colors from the project — do it once, here.
+
+#### 2a — Where to look
+
+Search these locations **in order**. Stop at each step if you find the color.
+
+| NbColorScheme parameter | Where to look in the project |
+|---|---|
+| `primary` | `ThemeData.colorScheme.primary` → `ThemeData.primaryColor` → `ThemeData.primarySwatch` → `MaterialColor` definition → constant named `primaryColor` / `kPrimary` / `brandColor` / `accentColor` |
+| `primaryForeground` | `ThemeData.colorScheme.onPrimary` → compute from primary luminance: if primary is dark (luminance < 0.3), use `Color(0xFFFFFFFF)`; else use `Color(0xFF000000)` |
+| `secondary` | `ThemeData.colorScheme.secondary` → `ThemeData.colorScheme.tertiary` → constant named `secondaryColor` / `kSecondary` |
+| `secondaryForeground` | `ThemeData.colorScheme.onSecondary` → same luminance rule as above |
+| `background` | `ThemeData.colorScheme.surface` (Material 3) → `ThemeData.scaffoldBackgroundColor` → `ThemeData.backgroundColor` (deprecated) |
+| `surface` | `ThemeData.colorScheme.surfaceContainerHighest` → `ThemeData.colorScheme.surface` → `ThemeData.cardColor` |
+| `border` | `ThemeData.dividerColor` → `ThemeData.colorScheme.outline` → leave unset (defaults to black/white) |
+| `danger` | `ThemeData.colorScheme.error` → constant named `errorColor` / `kError` / `dangerColor` |
+| `dangerForeground` | `ThemeData.colorScheme.onError` → same luminance rule |
+| `muted` | `ThemeData.colorScheme.surfaceContainerHighest` → `ThemeData.colorScheme.surfaceVariant` → leave unset |
+| `success` / `warning` | Look for constants named `successColor` / `warningColor` / `kSuccess` / `kWarning` → leave unset if not found |
+
+**If a color is not found in the project, do NOT pass that parameter** — `NbColorScheme.light()` and `NbColorScheme.dark()` have sensible defaults for every slot.
+
+#### 2b — Wrap the app with NbTheme
 
 Find the root widget (usually `main.dart` where `MaterialApp` or `runApp` is called).
-Wrap `MaterialApp` (or `CupertinoApp`) with `NbTheme`:
+Wrap `MaterialApp` (or `CupertinoApp`) with `NbTheme` using the colors you extracted:
 
 ```dart
 import 'package:neo_brutalism_ui/neo_brutalism_ui.dart';
@@ -42,12 +66,16 @@ import 'package:neo_brutalism_ui/neo_brutalism_ui.dart';
 // Before
 runApp(MaterialApp(home: MyApp()));
 
-// After
+// After — pass only the colors you actually found in Step 2a
 runApp(
   NbTheme(
     data: NbThemeData.light(
       colorScheme: NbColorScheme.light(
-        primary: Color(0xFFFDE047), // keep or replace with project's brand color
+        primary: Color(0xFF6366F1),           // extracted from project
+        primaryForeground: Color(0xFFFFFFFF), // computed from luminance
+        secondary: Color(0xFFF59E0B),         // extracted from project
+        danger: Color(0xFFEF4444),            // extracted from ThemeData.colorScheme.error
+        // omit parameters not found — library uses defaults
       ),
     ),
     child: MaterialApp(home: MyApp()),
@@ -55,11 +83,93 @@ runApp(
 );
 ```
 
-**Brand color selection:** If the project has an existing primary color in `ThemeData`, extract it and pass it to `NbColorScheme.light(primary: ...)`. If no brand color is defined, default to `Color(0xFFFDE047)` (yellow).
+**If no brand color is found anywhere in the project**, use the default `NbColorScheme.light()` with no parameters (which gives the neo-brutalism yellow palette).
+
+#### 2c — Dark mode
+
+If the project has `darkTheme:` in `MaterialApp`, also set up a dark color scheme. Apply the same extraction logic but read from the dark `ThemeData` instance:
+
+```dart
+NbTheme(
+  data: NbThemeData.light(colorScheme: NbColorScheme.light(primary: ...)),
+  darkData: NbThemeData.dark(colorScheme: NbColorScheme.dark(primary: ...)),
+  child: MaterialApp(
+    theme: ...,
+    darkTheme: ...,
+    home: MyApp(),
+  ),
+)
+```
 
 ---
 
-### Step 3 — Scan the project
+### Step 3 — Set up typography
+
+#### 3a — Find the project's current font
+
+Search for font declarations in this order:
+1. `ThemeData(fontFamily: '...')` — direct font name string
+2. `GoogleFonts.<fontName>()` — if `google_fonts` package is used, extract the font name
+3. `pubspec.yaml` → `fonts:` section — list of declared font families
+4. `TextStyle(fontFamily: '...')` used in 3+ places — likely the brand font
+
+#### 3b — Decide which font to use
+
+| Situation | Action |
+|---|---|
+| Project has a custom font already in `pubspec.yaml` | Use that font — pass its name to `NbThemeData.light(fontFamily: 'FontName')` |
+| Project uses `google_fonts` | Add `google_fonts` dependency if not present, keep it; pass the font family name to `NbThemeData` |
+| Project has no font or uses the default (Roboto) | Use **DM Sans** — it is the best neo-brutalism fit. Add it to `pubspec.yaml` and pass `fontFamily: 'DMSans'` |
+
+**Recommended neo-brutalism fonts (in order of preference):** DM Sans → Space Grotesk → Plus Jakarta Sans → Inter
+
+#### 3c — Add the font to pubspec.yaml (if switching to DM Sans or another new font)
+
+```yaml
+flutter:
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: fonts/DMSans-Regular.ttf
+          weight: 400
+        - asset: fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: fonts/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: fonts/DMSans-Bold.ttf
+          weight: 700
+        - asset: fonts/DMSans-ExtraBold.ttf
+          weight: 800
+```
+
+Then download the font files to `fonts/` and run `flutter pub get`.
+
+> If using `google_fonts`, you do NOT need to add font files — just pass `fontFamily: 'DM Sans'` and use `GoogleFonts.dmSansTextTheme()` in `MaterialApp.theme` if desired.
+
+#### 3d — Pass fontFamily to NbThemeData
+
+```dart
+NbTheme(
+  data: NbThemeData.light(
+    colorScheme: NbColorScheme.light(primary: ...),
+    fontFamily: 'DMSans', // the font name matching the family: key in pubspec.yaml
+  ),
+  child: MaterialApp(...),
+)
+```
+
+`NbTypography` uses this font family across all text variants (display, headline, body, label, caption). Every `NbText.*` and all component labels automatically use it — no per-widget font setting needed.
+
+#### 3e — Replace Text widgets with NbText
+
+After the font is set, replace content `Text` widgets according to the **Text** section of the Component Mapping Table (Step 6). The font will apply automatically through `NbTypography`. Do **not** replace:
+- `Text` widgets inside third-party package widgets
+- `Text` used only as debug/placeholder content
+- `Text` inside custom painters or canvas code
+
+---
+
+### Step 4 — Scan the project
 
 Use grep or file search to find all `.dart` files under `lib/`. For each file, look for components listed in the **Component Mapping Table** below. Build a list:
 
@@ -73,13 +183,13 @@ lib/widgets/app_bar.dart     AppBar                       NbAppBar
 
 ---
 
-### Step 4 — Execute replacements file by file
+### Step 5 — Execute replacements file by file
 
 For each file in your list, replace the Flutter/Material component with its NbComponent equivalent using the mapping table below. Follow the **Rules** below the table.
 
 ---
 
-### Step 5 — Verify
+### Step 6 — Verify
 
 Run `flutter analyze` after all replacements. Fix any errors before finishing.
 
@@ -188,7 +298,7 @@ Follow these rules when executing replacements:
 
 3. **Form validation** — `TextFormField` with `validator:` has no direct equivalent. Replace the widget with `NbTextField` and move validation to `onChanged` + a state variable for `errorText`, OR keep a `Form` widget and use `NbTextField` inside it (the `Form` will still work since `NbTextField` internally uses `TextField`).
 
-4. **Theme colors** — extract the project's primary color from `ThemeData.colorScheme.primary` or `primaryColor` and pass it to `NbColorScheme.light(primary: ...)`. For secondary color: pass to `secondary:`. Keep other colors as-is.
+4. **Theme colors** — color extraction is done once in **Step 2a**. Do not re-scan for colors during Step 5. When replacing components, do not hardcode colors — use `context.nbColors.*` (e.g. `context.nbColors.primary`) if the original widget used a theme color, or keep the original literal if it was a one-off override.
 
 5. **`isFullWidth` in Row** — whenever replacing a button inside a `Row`, wrap with `Expanded`. Never use `isFullWidth: true` directly inside a `Row`.
 
