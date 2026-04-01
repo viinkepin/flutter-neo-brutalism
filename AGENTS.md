@@ -265,6 +265,8 @@ Run `flutter analyze` after all replacements. Fix any errors before finishing.
 | `FilterChip(...)` / `InputChip(...)` / `Chip(...)` | `NbChip(...)` or `NbChipGroup(options: [...])` | Match variant: filter=selectable, input=removable, display=read-only |
 | `showDatePicker(...)` | `await NbDatePicker.show(context, initialDate: ...)` | Returns `DateTime?` — same as `showDatePicker` |
 | Custom increment/decrement row | `NbNumberStepper(value: ..., onChanged: ...)` | |
+| `GridView` of product cards | `NbProductGridView(items: [...])` | Use `NbProductItem` as the data model |
+| `ListView` of product rows | `NbProductListView(items: [...])` | Image on left, title/price/rating on right |
 | `ExpansionTile(...)` | `NbAccordion(title: '...', child: ...)` | |
 | `ExpansionPanelList(...)` | `NbAccordionGroup(items: [...])` | |
 
@@ -348,6 +350,7 @@ lib/
       nb_popup_menu.dart         # NbPopupMenuButton, NbPopupMenuItem
       nb_drawer.dart             # NbDrawer, NbDrawerItem, NbDrawerSection, NbDrawerHeader
       nb_date_picker.dart        # NbDatePicker
+      nb_product_list.dart       # NbProductItem, NbProductGridView, NbProductListView
 example/
   lib/
     main.dart                    # Full showcase app (Dashboard, Components, Typography tabs)
@@ -938,6 +941,41 @@ NbDatePicker(initialDate: _date, onChanged: (d) => setState(() => _date = d))
 - Center line highlight via `IgnorePointer` border strip
 - Day auto-clamps when switching to shorter month (animates to last valid day)
 - Year range: `minDate?.year ?? now-100` to `maxDate?.year ?? now+10`
+
+---
+
+### NbProductGridView / NbProductListView
+
+```dart
+// Standalone (fills available space)
+NbProductGridView(items: _products)
+NbProductListView(items: _products)
+
+// Embedded in Column
+NbProductGridView(
+  items: _products,
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+)
+
+// Switch between grid and list
+Expanded(
+  child: _isGrid
+    ? NbProductGridView(items: _products, padding: const EdgeInsets.all(16))
+    : NbProductListView(items: _products, padding: const EdgeInsets.all(16)),
+)
+```
+
+**NbProductItem** key fields: `title` (required), `price` (required), `image` (Widget?),
+`badge` (String?), `badgeColor` (Color?), `rating` (double? 0–5), `reviewCount` (int?),
+`originalPrice` (String? → strikethrough), `onTap` (VoidCallback?), `onAddToCart` (VoidCallback?).
+
+- Tappable cards (when `onTap != null`): elevated shadow + press-into-shadow animation
+- `onAddToCart` shows a `+` button (primary color, press animation, no shadow to avoid clip)
+- Badge rendered over image top-left corner
+- Rating: filled/half/empty star icons using `Icons.star_rounded` / `Icons.star_half_rounded`
+- `IntrinsicHeight` used in list tile to stretch image to content height
+- Image clipped via `ClipRRect` (top corners for grid, left corners for list tile)
 
 ---
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neo_brutalism_ui/neo_brutalism_ui.dart';
 import 'pages/inputs_page.dart';
+import 'pages/list_view_page.dart';
 
 void main() {
   runApp(const NbShowcaseApp());
@@ -46,6 +47,7 @@ class _HomePageState extends State<_HomePage> {
     _ComponentsPage(),
     _TypographyPage(),
     InputsPage(),
+    ListViewPage(),
   ];
 
   @override
@@ -94,6 +96,15 @@ class _HomePageState extends State<_HomePage> {
               selected: _tab == 3,
               onTap: () {
                 setState(() => _tab = 3);
+                Navigator.pop(context);
+              },
+            ),
+            NbDrawerItem(
+              icon: Icons.grid_view_rounded,
+              label: 'List View',
+              selected: _tab == 4,
+              onTap: () {
+                setState(() => _tab = 4);
                 Navigator.pop(context);
               },
             ),
@@ -156,6 +167,12 @@ class _HomePageState extends State<_HomePage> {
                   label: 'Inputs',
                   selected: _tab == 3,
                   onTap: () => setState(() => _tab = 3),
+                ),
+                _NavItem(
+                  icon: Icons.grid_view_rounded,
+                  label: 'Products',
+                  selected: _tab == 4,
+                  onTap: () => setState(() => _tab = 4),
                 ),
               ],
             ),

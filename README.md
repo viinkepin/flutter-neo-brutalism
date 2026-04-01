@@ -1159,6 +1159,70 @@ Day is automatically clamped when switching to a month with fewer days (e.g. Jan
 
 ---
 
+## NbProductGridView / NbProductListView
+
+Scroll-based product listing widgets. Both accept a list of `NbProductItem` and can be embedded in a `Column` (with `shrinkWrap: true`) or used standalone.
+
+```dart
+// Standalone grid (fills available height)
+NbProductGridView(
+  items: _products,
+)
+
+// Standalone list
+NbProductListView(
+  items: _products,
+)
+
+// Embedded in a Column
+NbProductGridView(
+  items: _products,
+  shrinkWrap: true,
+  physics: const NeverScrollableScrollPhysics(),
+)
+```
+
+**NbProductItem** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String` | required | Product name |
+| `price` | `String` | required | Formatted price, e.g. `'\$29.99'` |
+| `originalPrice` | `String?` | — | Shown with strikethrough (sale price) |
+| `image` | `Widget?` | — | Any widget — `Image.network`, `Image.asset`, colored container, etc. |
+| `badge` | `String?` | — | Overlay label, e.g. `'Sale'`, `'New'` |
+| `badgeColor` | `Color?` | `primary` | Badge background color |
+| `rating` | `double?` | — | Star rating 0.0–5.0. Shows star icons when set. |
+| `reviewCount` | `int?` | — | Review count shown next to stars |
+| `onTap` | `VoidCallback?` | — | Makes the card tappable with press animation + shadow |
+| `onAddToCart` | `VoidCallback?` | — | Shows a `+` button in the bottom-right of the card |
+
+**NbProductGridView** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<NbProductItem>` | required | Product list |
+| `crossAxisCount` | `int` | `2` | Number of columns |
+| `crossAxisSpacing` | `double` | `12` | Horizontal gap between cards |
+| `mainAxisSpacing` | `double` | `12` | Vertical gap between cards |
+| `imageHeight` | `double` | `140` | Image section height in each card |
+| `padding` | `EdgeInsets?` | — | Outer padding |
+| `shrinkWrap` | `bool` | `false` | Set `true` when embedding in a Column |
+| `physics` | `ScrollPhysics?` | — | Use `NeverScrollableScrollPhysics()` when embedding |
+
+**NbProductListView** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `items` | `List<NbProductItem>` | required | Product list |
+| `imageSize` | `double` | `110` | Width (and min height) of the image thumbnail |
+| `spacing` | `double` | `12` | Vertical gap between items |
+| `padding` | `EdgeInsets?` | — | Outer padding |
+| `shrinkWrap` | `bool` | `false` | Set `true` when embedding in a Column |
+| `physics` | `ScrollPhysics?` | — | Use `NeverScrollableScrollPhysics()` when embedding |
+
+---
+
 ## Design Principles
 
 ### Shadow Hierarchy

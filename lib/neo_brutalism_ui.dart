@@ -62,3 +62,5 @@ export 'src/components/nb_navbar.dart' show NbNavBar, NbNavItem;
 export 'src/components/nb_popup_menu.dart' show NbPopupMenuButton, NbPopupMenuItem;
 export 'src/components/nb_drawer.dart' show NbDrawer, NbDrawerItem, NbDrawerSection, NbDrawerHeader;
 export 'src/components/nb_date_picker.dart' show NbDatePicker;
+export 'src/components/nb_product_list.dart'
+    show NbProductItem, NbProductGridView, NbProductListView;
