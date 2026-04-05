@@ -18,17 +18,21 @@ class NbShowcaseApp extends StatelessWidget {
           primary: const Color(0xFFFDE047), // bold yellow — change to your brand color
         ),
       ),
-      child: MaterialApp(
-        title: 'Neo Brutalism UI',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color(0xFFFAFAF9),
+      child: NbToastOverlay(
+        child: MaterialApp(
+          title: 'Neo Brutalism UI',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: const Color(0xFFFAFAF9),
+          ),
+          home: const _HomePage(),
         ),
-        home: const _HomePage(),
       ),
     );
   }
 }
+
+// ─── NbToastOverlay wraps the MaterialApp so toasts render above everything ───
 
 // ─── Navigation Shell ─────────────────────────────────────────────────────────
 
@@ -621,6 +625,13 @@ class _ComponentsPageState extends State<_ComponentsPage> {
   DateTime _pickedDate = DateTime.now();
   DateTime _inlineDate = DateTime.now();
 
+  // ── New component state ────────────────────────────────────────────────────
+  double _rating = 3;
+  double _ratingReadOnly = 4.5;
+  double _progressLinear = 0.65;
+  double _progressCircular = 0.4;
+  bool _showAlert = true;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.nbColors;
@@ -1201,6 +1212,169 @@ class _ComponentsPageState extends State<_ComponentsPage> {
                         ],
                       ),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // ── Toast ─────────────────────────────────────────────────────
+              NbText.title('Toast'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('VARIANTS', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        NbButton.primary(
+                          label: 'Success',
+                          onPressed: () => context.showNbToast('Data tersimpan!', variant: NbToastVariant.success),
+                        ),
+                        NbButton.secondary(
+                          label: 'Info',
+                          onPressed: () => context.showNbToast('Sinkronisasi selesai', variant: NbToastVariant.info),
+                        ),
+                        NbButton.secondary(
+                          label: 'Warning',
+                          onPressed: () => context.showNbToast('Stok hampir habis', variant: NbToastVariant.warning),
+                        ),
+                        NbButton.danger(
+                          label: 'Error',
+                          onPressed: () => context.showNbToast('Gagal menyimpan data', variant: NbToastVariant.error),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── Alert ─────────────────────────────────────────────────────
+              NbText.title('Alert'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbAlert(message: 'Informasi terbaru tersedia.', variant: NbAlertVariant.info),
+                    const SizedBox(height: 10),
+                    NbAlert(message: 'Data berhasil disimpan.', variant: NbAlertVariant.success),
+                    const SizedBox(height: 10),
+                    NbAlert(message: 'Stok produk hampir habis.', variant: NbAlertVariant.warning),
+                    const SizedBox(height: 10),
+                    if (_showAlert)
+                      NbAlert(
+                        title: 'Gagal mengirim',
+                        message: 'Koneksi internet terputus. Coba lagi.',
+                        variant: NbAlertVariant.danger,
+                        onDismiss: () => setState(() => _showAlert = false),
+                      ),
+                    if (!_showAlert)
+                      NbButton.secondary(
+                        label: 'Show dismissible alert',
+                        onPressed: () => setState(() => _showAlert = true),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── Badge ─────────────────────────────────────────────────────
+              NbText.title('Badge'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Wrap(
+                  spacing: 24,
+                  runSpacing: 16,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    NbBadge(count: 3, child: Icon(Icons.notifications_rounded, size: 28)),
+                    NbBadge(count: 120, maxCount: 99, child: Icon(Icons.shopping_cart_rounded, size: 28)),
+                    NbBadge(count: 1, color: colors.primary, child: Icon(Icons.mail_rounded, size: 28)),
+                    NbBadge(count: 0, child: Icon(Icons.inbox_rounded, size: 28)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── Avatar ────────────────────────────────────────────────────
+              NbText.title('Avatar'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    NbAvatar(initials: 'KH', size: 40),
+                    NbAvatar(initials: 'AB', size: 48, backgroundColor: colors.primary, foregroundColor: colors.primaryForeground),
+                    NbAvatar(initials: 'JD', size: 56),
+                    NbAvatar(initials: 'XY', size: 32),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── Progress Bar ──────────────────────────────────────────────
+              NbText.title('Progress Bar'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('LINEAR', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    NbProgressBar(value: _progressLinear, label: '${(_progressLinear * 100).round()}%'),
+                    const SizedBox(height: 8),
+                    Slider(
+                      value: _progressLinear,
+                      onChanged: (v) => setState(() => _progressLinear = v),
+                    ),
+                    const SizedBox(height: 16),
+                    NbText.labelSmall('CIRCULAR', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        NbProgressBar.circular(value: _progressCircular, size: 56, label: '${(_progressCircular * 100).round()}%'),
+                        const SizedBox(width: 16),
+                        NbProgressBar.circular(value: 1.0, size: 48, color: colors.success),
+                        const SizedBox(width: 16),
+                        NbProgressBar.circular(value: 0.3, size: 40, color: colors.danger),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── Rating ────────────────────────────────────────────────────
+              NbText.title('Rating'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('INTERACTIVE', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    NbRating(value: _rating, onChanged: (v) => setState(() => _rating = v)),
+                    const SizedBox(height: 4),
+                    NbText.caption('Selected: ${_rating.toStringAsFixed(0)} / 5', color: colors.mutedForeground),
+                    const SizedBox(height: 16),
+                    NbText.labelSmall('READ-ONLY (HALF STAR)', color: colors.mutedForeground),
+                    const SizedBox(height: 12),
+                    NbRating(value: _ratingReadOnly),
+                    const SizedBox(height: 4),
+                    NbText.caption('4.5 / 5 — 128 reviews', color: colors.mutedForeground),
                   ],
                 ),
               ),

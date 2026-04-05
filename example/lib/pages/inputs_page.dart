@@ -61,6 +61,17 @@ class _InputsPageState extends State<InputsPage> {
   String? _comboCity;
   String? _comboProduct;
 
+  // ── TimePicker state ───────────────────────────────────────────────────────
+  TimeOfDay _pickedTime = TimeOfDay.now();
+  TimeOfDay _inlineTime = TimeOfDay.now();
+
+  // ── Slider state ───────────────────────────────────────────────────────────
+  double _sliderVal = 40;
+  double _sliderDivisions = 5;
+
+  // ── MultiSelect state ──────────────────────────────────────────────────────
+  List<String> _multiSelected = [];
+
   // ── Autocomplete state ─────────────────────────────────────────────────────
   static const _allCities = [
     'Jakarta',
@@ -946,6 +957,110 @@ class _InputsPageState extends State<InputsPage> {
                 ),
               ),
 
+              // ── TIME PICKER ────────────────────────────────────────────────
+              const SizedBox(height: 24),
+              _SectionLabel('TimePicker'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('BOTTOM SHEET', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 12),
+                    NbButton.secondary(
+                      label: 'Pilih Waktu — ${_formatTime(_pickedTime)}',
+                      leading: const Icon(Icons.schedule_rounded),
+                      onPressed: () async {
+                        final t = await NbTimePicker.show(context, initialTime: _pickedTime);
+                        if (t != null) setState(() => _pickedTime = t);
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    NbText.labelSmall('INLINE', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 12),
+                    NbTimePicker(
+                      initialTime: _inlineTime,
+                      onChanged: (t) => setState(() => _inlineTime = t),
+                    ),
+                    const SizedBox(height: 8),
+                    NbText.caption('Selected: ${_formatTime(_inlineTime)}', color: context.nbColors.mutedForeground),
+                  ],
+                ),
+              ),
+
+              // ── SLIDER ────────────────────────────────────────────────────
+              const SizedBox(height: 24),
+              _SectionLabel('Slider'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbText.labelSmall('CONTINUOUS', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 8),
+                    NbSlider(
+                      value: _sliderVal,
+                      min: 0,
+                      max: 100,
+                      label: '${_sliderVal.round()}',
+                      onChanged: (v) => setState(() => _sliderVal = v),
+                    ),
+                    NbText.caption('Value: ${_sliderVal.round()}', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 16),
+                    NbText.labelSmall('WITH DIVISIONS', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 8),
+                    NbSlider(
+                      value: _sliderDivisions,
+                      min: 0,
+                      max: 10,
+                      divisions: 10,
+                      label: '${_sliderDivisions.round()}',
+                      activeColor: context.nbColors.secondary,
+                      onChanged: (v) => setState(() => _sliderDivisions = v),
+                    ),
+                    const SizedBox(height: 16),
+                    NbText.labelSmall('DISABLED', color: context.nbColors.mutedForeground),
+                    const SizedBox(height: 8),
+                    NbSlider(value: 0.6, min: 0, max: 1, onChanged: null),
+                  ],
+                ),
+              ),
+
+              // ── MULTI SELECT ──────────────────────────────────────────────
+              const SizedBox(height: 24),
+              _SectionLabel('MultiSelect'),
+              const SizedBox(height: 12),
+              NbCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NbMultiSelect<String>(
+                      label: 'Kategori Produk',
+                      hint: 'Pilih satu atau lebih',
+                      required: true,
+                      values: _multiSelected,
+                      clearable: true,
+                      onChanged: (v) => setState(() => _multiSelected = v),
+                      options: const [
+                        NbSelectOption(value: 'food', label: 'Makanan & Minuman'),
+                        NbSelectOption(value: 'electronics', label: 'Elektronik'),
+                        NbSelectOption(value: 'fashion', label: 'Fashion'),
+                        NbSelectOption(value: 'beauty', label: 'Kecantikan'),
+                        NbSelectOption(value: 'home', label: 'Rumah Tangga'),
+                        NbSelectOption(value: 'sports', label: 'Olahraga', disabled: true),
+                      ],
+                    ),
+                    if (_multiSelected.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      NbText.caption('Dipilih: ${_multiSelected.join(', ')}', color: context.nbColors.mutedForeground),
+                    ],
+                  ],
+                ),
+              ),
+
               // ── COMPLETE FORM EXAMPLE ──────────────────────────────────────
               const SizedBox(height: 24),
               _SectionLabel('Complete Form Example'),
@@ -958,6 +1073,9 @@ class _InputsPageState extends State<InputsPage> {
       ),
     );
   }
+
+  String _formatTime(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 }
 
 // ─── Helper widgets ───────────────────────────────────────────────────────────
@@ -1120,4 +1238,7 @@ class _CompleteFormExampleState extends State<_CompleteFormExample> {
       ),
     );
   }
+
+  String _formatTime(TimeOfDay t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 }

@@ -1080,6 +1080,128 @@ NbCard(
 
 ---
 
+## New Components (Added 2026-04-05)
+
+### NbToast + NbToastOverlay
+
+```dart
+// Setup — wrap MaterialApp
+NbToastOverlay(child: MaterialApp(...))
+
+// Show from anywhere in the tree
+context.showNbToast('Tersimpan!', variant: NbToastVariant.success)
+context.showNbToast('Gagal', variant: NbToastVariant.error, duration: Duration(seconds: 4))
+// variants: success | error | warning | info
+```
+
+### NbAlert
+
+```dart
+NbAlert(message: 'Stok hampir habis', variant: NbAlertVariant.warning)
+NbAlert(title: 'Berhasil', message: 'Data tersimpan.', variant: NbAlertVariant.success, onDismiss: () {})
+// variants: info | success | warning | danger
+```
+
+### NbBadge
+
+```dart
+NbBadge(count: 3, child: Icon(Icons.notifications_rounded))
+NbBadge(count: 120, maxCount: 99, child: Icon(Icons.shopping_cart_rounded)) // "99+"
+// count: 0 → badge hidden automatically
+```
+
+### NbEmptyState
+
+```dart
+NbEmptyState(title: 'Belum ada produk')
+NbEmptyState(
+  icon: Icon(Icons.inventory_2_outlined, size: 48),
+  title: 'Belum ada produk',
+  subtitle: 'Tambah produk pertamamu.',
+  action: NbButton.primary(label: 'Tambah', onPressed: () {}),
+)
+```
+
+### NbSkeleton
+
+```dart
+NbSkeleton(width: 200, height: 16)
+NbSkeleton.text(lines: 3)
+NbSkeleton.avatar(size: 40)
+NbSkeleton(isLoading: _loading, width: double.infinity, height: 16, child: Text('Loaded'))
+```
+
+### NbTable
+
+```dart
+NbTable(
+  columns: [
+    NbTableColumn(label: 'Produk', flex: 2),
+    NbTableColumn(label: 'Harga', width: 100),
+  ],
+  rows: [
+    [Text('Kopi'), Text('Rp 15.000')],
+    [Text('Teh'), Text('Rp 10.000')],
+  ],
+)
+// Horizontal scroll applied automatically when content overflows
+```
+
+### NbTimePicker
+
+```dart
+final time = await NbTimePicker.show(context, initialTime: TimeOfDay.now())
+NbTimePicker(initialTime: _time, onChanged: (t) => setState(() => _time = t))
+// Same wheel-scroll pattern as NbDatePicker
+```
+
+### NbSlider
+
+```dart
+NbSlider(value: _val, min: 0, max: 100, onChanged: (v) => setState(() => _val = v))
+NbSlider(value: _val, min: 0, max: 100, divisions: 10, label: '${_val.round()}', onChanged: (v) {})
+```
+
+### NbMultiSelect\<T\>
+
+```dart
+NbMultiSelect<String>(
+  label: 'Kategori',
+  values: _selected,
+  onChanged: (v) => setState(() => _selected = v),
+  options: [
+    NbSelectOption(value: 'food', label: 'Makanan'),
+    NbSelectOption(value: 'drink', label: 'Minuman'),
+  ],
+)
+// Reuses NbSelectOption<T> from NbSelect
+```
+
+### NbAvatar
+
+```dart
+NbAvatar(initials: 'KH', size: 40)
+NbAvatar(imageUrl: 'https://...', size: 48) // shows initials on error
+NbAvatar(initials: 'AB', size: 40, backgroundColor: colors.primary)
+```
+
+### NbProgressBar
+
+```dart
+NbProgressBar(value: 0.65)
+NbProgressBar(value: 0.65, label: '65%')
+NbProgressBar.circular(value: 0.4, size: 48)
+```
+
+### NbRating
+
+```dart
+NbRating(value: _rating, onChanged: (v) => setState(() => _rating = v))
+NbRating(value: 3.5) // read-only, supports half-star display
+```
+
+---
+
 ## Known Gotchas
 
 | Situation | Problem | Fix |
@@ -1102,6 +1224,13 @@ NbCard(
 | `NbAccordionGroup` external state control | Group manages state internally | Use standalone `NbAccordion` + `onExpansionChanged` for external control |
 | `NbCard.filled` missing `backgroundColor` | Compile error — it's required | Always pass `backgroundColor` to `NbCard.filled` |
 | Shadow on every element | Eye fatigue, no visual hierarchy | Apply shadow only to primary CTA buttons and `NbCard.elevated` |
+| `context.showNbToast()` does nothing | `NbToastOverlay` missing in widget tree | Wrap `MaterialApp` (or root widget) with `NbToastOverlay` |
+| `NbTimePicker` inline in unbounded height | Overflow error | Wrap in `SizedBox(height: 220)` — same as `NbDatePicker` |
+| `NbTimePicker.show()` returns null | User dismissed without confirming | Always null-check the return value |
+| `NbTable` flex columns in unbounded width | Flex requires a bounded parent | `NbTable` wraps content in `IntrinsicWidth`; fixed-width columns (`NbTableColumn(width:)`) are safer in unbounded contexts |
+| `NbSkeleton.text()` last line shorter | Intentional design — last line is 70% width | Expected behavior for realistic skeleton |
+| `NbMultiSelect` bottom sheet shows no confirm button | Scrolled past it in long list | Bottom sheet max height is 40% of screen; list scrolls within |
+| `NbBadge` count on very small icon | Badge clips outside parent bounds | Use `Stack(clipBehavior: Clip.none)` around `NbBadge` — it already sets this internally |
 
 ---
 
@@ -1125,9 +1254,6 @@ Bold, saturated solid colors only. No gradients, no glassmorphism.
 ## What This Library Does NOT Include
 
 - Charts / graphs
-- Data tables
-- Snackbar / Toast
-- Time picker (date picker exists via `NbDatePicker`)
 - Image cropper
 - Navigation rail / side rail
 - Tooltip

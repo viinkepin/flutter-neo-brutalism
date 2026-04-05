@@ -77,6 +77,7 @@ class ListViewPage extends StatefulWidget {
 
 class _ListViewPageState extends State<ListViewPage> {
   bool _isGrid = true;
+  bool _showProducts = true;
 
   @override
   Widget build(BuildContext context) {
@@ -123,19 +124,107 @@ class _ListViewPageState extends State<ListViewPage> {
 
         // ── Product list ───────────────────────────────────────────────
         Expanded(
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            child: _isGrid
-                ? NbProductGridView(
-                    key: const ValueKey('grid'),
-                    items: _sampleProducts,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Toggle empty state
+                Row(
+                  children: [
+                    NbText.labelSmall('PRODUCTS', color: colors.mutedForeground),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () => setState(() => _showProducts = !_showProducts),
+                      child: NbText.labelSmall(
+                        _showProducts ? 'Show Empty State' : 'Show Products',
+                        color: colors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Products or Empty State
+                if (_showProducts)
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: _isGrid
+                        ? NbProductGridView(
+                            key: const ValueKey('grid'),
+                            items: _sampleProducts,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                          )
+                        : NbProductListView(
+                            key: const ValueKey('list'),
+                            items: _sampleProducts,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                          ),
                   )
-                : NbProductListView(
-                    key: const ValueKey('list'),
-                    items: _sampleProducts,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                else
+                  NbEmptyState(
+                    icon: const Icon(Icons.inventory_2_outlined),
+                    title: 'Belum ada produk',
+                    subtitle: 'Tambah produk pertamamu untuk mulai berjualan.',
+                    action: NbButton.primary(
+                      label: 'Tambah Produk',
+                      leading: const Icon(Icons.add_rounded),
+                      onPressed: () => setState(() => _showProducts = true),
+                    ),
                   ),
+
+                const SizedBox(height: 32),
+
+                // ── Skeleton ─────────────────────────────────────────────
+                NbText.labelSmall('SKELETON LOADING', color: colors.mutedForeground),
+                const SizedBox(height: 12),
+                Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        NbSkeleton.avatar(size: 48),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              NbSkeleton(width: double.infinity, height: 14),
+                              const SizedBox(height: 8),
+                              NbSkeleton(width: 120, height: 12),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    NbSkeleton.text(lines: 3),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                // ── Table ────────────────────────────────────────────────
+                NbText.labelSmall('TABLE', color: colors.mutedForeground),
+                const SizedBox(height: 12),
+                NbTable(
+                  columns: const [
+                    NbTableColumn(label: 'Produk', flex: 2),
+                    NbTableColumn(label: 'Harga', width: 110),
+                    NbTableColumn(label: 'Stok', width: 70),
+                    NbTableColumn(label: 'Status', width: 90),
+                  ],
+                  rows: [
+                    [Text('Kopi Arabika'), Text('Rp 25.000'), Text('42'), Text('Aktif')],
+                    [Text('Teh Hijau'), Text('Rp 15.000'), Text('18'), Text('Aktif')],
+                    [Text('Jus Jeruk'), Text('Rp 18.000'), Text('0'), Text('Habis')],
+                    [Text('Es Krim Coklat'), Text('Rp 20.000'), Text('7'), Text('Aktif')],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],

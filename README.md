@@ -1223,6 +1223,285 @@ NbProductGridView(
 
 ---
 
+### NbToast + NbToastOverlay
+
+Global toast notifications. Wrap your app with `NbToastOverlay`, then call `context.showNbToast(...)` from anywhere.
+
+```dart
+// Setup
+NbToastOverlay(
+  child: MaterialApp(home: MyApp()),
+)
+
+// Usage
+context.showNbToast('Tersimpan!', variant: NbToastVariant.success)
+context.showNbToast('Gagal', variant: NbToastVariant.error, duration: Duration(seconds: 4))
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `message` | `String` | required | Toast body text |
+| `variant` | `NbToastVariant` | `info` | `success` / `error` / `warning` / `info` |
+| `duration` | `Duration` | `3s` | Auto-dismiss duration |
+
+---
+
+### NbAlert
+
+Inline alert banner rendered in the widget tree. Not an overlay.
+
+```dart
+NbAlert(message: 'Stok hampir habis', variant: NbAlertVariant.warning)
+
+NbAlert(
+  title: 'Berhasil',
+  message: 'Data tersimpan.',
+  variant: NbAlertVariant.success,
+  onDismiss: () => setState(() => _show = false),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `message` | `String` | required | Alert body text |
+| `variant` | `NbAlertVariant` | `info` | `info` / `success` / `warning` / `danger` |
+| `title` | `String?` | — | Bold title above message |
+| `onDismiss` | `VoidCallback?` | — | Shows × when provided |
+| `leading` | `Widget?` | auto icon | Override leading icon |
+
+---
+
+### NbBadge
+
+Counter badge overlaid on a child widget.
+
+```dart
+NbBadge(count: 3, child: Icon(Icons.notifications_rounded))
+NbBadge(count: 120, maxCount: 99, child: Icon(Icons.shopping_cart_rounded)) // "99+"
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `child` | `Widget` | required | Widget to wrap |
+| `count` | `int` | required | Badge value — hidden when 0 |
+| `maxCount` | `int` | `99` | Cap — shows `"99+"` above this |
+| `color` | `Color?` | `colors.danger` | Badge background |
+| `foregroundColor` | `Color?` | white | Badge text color |
+
+---
+
+### NbEmptyState
+
+Empty state placeholder for lists and pages.
+
+```dart
+NbEmptyState(title: 'Belum ada produk')
+
+NbEmptyState(
+  icon: Icon(Icons.inventory_2_outlined, size: 48),
+  title: 'Belum ada produk',
+  subtitle: 'Tambah produk pertamamu untuk mulai berjualan.',
+  action: NbButton.primary(label: 'Tambah', onPressed: () {}),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `title` | `String` | required | Primary message |
+| `subtitle` | `String?` | — | Secondary message |
+| `icon` | `Widget?` | — | Illustration or icon |
+| `action` | `Widget?` | — | CTA button or any widget |
+
+---
+
+### NbSkeleton
+
+Loading placeholder. Animates opacity between 40–90%.
+
+```dart
+NbSkeleton(width: 200, height: 16)
+NbSkeleton.text(lines: 3)
+NbSkeleton.avatar(size: 40)
+
+// Toggle
+NbSkeleton(isLoading: _loading, width: double.infinity, height: 16, child: Text('Loaded'))
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `width` | `double?` | `double.infinity` | Block width |
+| `height` | `double` | required | Block height |
+| `borderRadius` | `double?` | theme default | Corner radius |
+| `isLoading` | `bool` | `true` | When false, renders `child` |
+| `child` | `Widget?` | — | Content shown when not loading |
+
+Named constructors: `NbSkeleton.text({lines, lineHeight, lineSpacing})`, `NbSkeleton.avatar({size})`.
+
+---
+
+### NbTable
+
+Simple data table with horizontal scroll.
+
+```dart
+NbTable(
+  columns: [
+    NbTableColumn(label: 'Produk', flex: 2),
+    NbTableColumn(label: 'Harga', width: 100),
+    NbTableColumn(label: 'Stok', width: 80),
+  ],
+  rows: [
+    [Text('Kopi'), Text('Rp 15.000'), Text('42')],
+    [Text('Teh'), Text('Rp 10.000'), Text('18')],
+  ],
+)
+```
+
+**NbTableColumn** parameters:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `label` | `String` | required | Header text |
+| `flex` | `int?` | — | Proportional sizing (use flex OR width) |
+| `width` | `double?` | — | Fixed width |
+| `alignment` | `AlignmentGeometry` | `centerLeft` | Cell alignment |
+
+---
+
+### NbTimePicker
+
+Wheel-scroll time picker. Same pattern as `NbDatePicker`.
+
+```dart
+final time = await NbTimePicker.show(context, initialTime: TimeOfDay.now())
+
+NbTimePicker(initialTime: _time, onChanged: (t) => setState(() => _time = t))
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `initialTime` | `TimeOfDay?` | `TimeOfDay.now()` | Starting value |
+| `use24Hour` | `bool` | `true` | 24h vs AM/PM |
+| `onChanged` | `ValueChanged<TimeOfDay>?` | — | Called on scroll |
+| `title` | `String` | `'Select Time'` | Sheet title (`show` only) |
+| `confirmLabel` | `String` | `'Select'` | Confirm button (`show` only) |
+
+---
+
+### NbSlider
+
+Drag slider with neo-brutalism bordered thumb.
+
+```dart
+NbSlider(value: _val, min: 0, max: 100, onChanged: (v) => setState(() => _val = v))
+
+NbSlider(value: _val, min: 0, max: 100, divisions: 10, label: '${_val.round()}', onChanged: (v) {})
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | required | Current value |
+| `min` | `double` | `0` | Minimum |
+| `max` | `double` | `1` | Maximum |
+| `onChanged` | `ValueChanged<double>?` | — | `null` = disabled |
+| `divisions` | `int?` | — | Snap points |
+| `label` | `String?` | — | Tooltip while dragging |
+| `activeColor` | `Color?` | `colors.primary` | Track fill |
+| `enabled` | `bool` | `true` | Interactive state |
+
+---
+
+### NbMultiSelect\<T\>
+
+Multi-value dropdown. Same pattern as `NbSelect`. Reuses `NbSelectOption<T>`.
+
+```dart
+NbMultiSelect<String>(
+  label: 'Kategori',
+  hint: 'Pilih kategori',
+  values: _selected,
+  onChanged: (v) => setState(() => _selected = v),
+  options: [
+    NbSelectOption(value: 'food', label: 'Makanan'),
+    NbSelectOption(value: 'drink', label: 'Minuman'),
+  ],
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `options` | `List<NbSelectOption<T>>` | required | Option list |
+| `values` | `List<T>` | required | Selected values |
+| `onChanged` | `ValueChanged<List<T>>?` | — | Selection callback |
+| `label` | `String?` | — | Label above field |
+| `hint` | `String?` | — | Placeholder |
+| `errorText` | `String?` | — | Error text |
+| `required` | `bool` | `false` | Red `*` on label |
+| `enabled` | `bool` | `true` | Interactive |
+| `clearable` | `bool` | `false` | Shows × to clear all |
+
+---
+
+### NbAvatar
+
+Profile avatar with initials fallback.
+
+```dart
+NbAvatar(initials: 'KH', size: 40)
+NbAvatar(imageUrl: 'https://...', size: 48)
+NbAvatar(initials: 'AB', size: 40, backgroundColor: colors.primary)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `initials` | `String?` | — | 1–2 chars shown when no image |
+| `imageUrl` | `String?` | — | Network image URL |
+| `size` | `double` | `40` | Diameter in pixels |
+| `backgroundColor` | `Color?` | `colors.muted` | Background for initials |
+| `foregroundColor` | `Color?` | `colors.foreground` | Initials text color |
+
+---
+
+### NbProgressBar
+
+Linear and circular progress indicators.
+
+```dart
+NbProgressBar(value: 0.65)
+NbProgressBar(value: 0.65, label: '65%')
+NbProgressBar.circular(value: 0.4, size: 48)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | required | Progress `0.0–1.0` |
+| `color` | `Color?` | `colors.primary` | Fill color |
+| `backgroundColor` | `Color?` | `colors.muted` | Track color |
+| `label` | `String?` | — | Text below (linear) or center (circular) |
+| `height` | `double` | `12` | Track height (linear only) |
+| `size` | `double` | `48` | Diameter (circular only) |
+
+---
+
+### NbRating
+
+Star rating. Read-only when `onChanged` is null. Supports half-star display.
+
+```dart
+NbRating(value: _rating, onChanged: (v) => setState(() => _rating = v))
+NbRating(value: 3.5) // read-only, shows half star
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `value` | `double` | required | Current rating |
+| `maxValue` | `int` | `5` | Number of stars |
+| `onChanged` | `ValueChanged<double>?` | — | `null` = read-only |
+| `size` | `double` | `24` | Star size |
+| `activeColor` | `Color?` | `colors.primary` | Filled star color |
+
+---
+
 ## Design Principles
 
 ### Shadow Hierarchy
@@ -1257,7 +1536,8 @@ See `example/` for a full interactive showcase:
 
 ```
 example/lib/
-  main.dart           # Dashboard, Components, Typography tabs
+  main.dart               # Dashboard, Components (incl. Toast, Alert, Badge, Avatar, Progress, Rating), Typography
   pages/
-    inputs_page.dart  # All form components — interactive & stateful
+    inputs_page.dart      # All form inputs incl. TimePicker, Slider, MultiSelect
+    list_view_page.dart   # Product listing, EmptyState, Skeleton, Table
 ```
