@@ -54,9 +54,23 @@ class NbAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   static const double _toolbarHeight = 56;
 
+  /// The divider under the toolbar is always rendered and consumes layout
+  /// height, so [preferredSize] must include it — otherwise the Column
+  /// overflows the height the Scaffold allocates by exactly this many pixels.
+  /// Fixed (not `theme.borderWidth`) because [preferredSize] has no
+  /// [BuildContext]; matches the default `NbThemeData.borderWidth`, and
+  /// [build] uses this same constant so the two never drift.
+  static const double _dividerHeight = 2;
+
+  /// Vertical padding wrapped around [bottom] when present (8 top + 8 bottom).
+  /// Kept in sync with the [Padding] in [build].
+  static const double _bottomPadding = 16;
+
   @override
   Size get preferredSize => Size.fromHeight(
-        _toolbarHeight + (bottom?.preferredSize.height ?? 0),
+        _toolbarHeight +
+            _dividerHeight +
+            (bottom == null ? 0 : bottom!.preferredSize.height + _bottomPadding),
       );
 
   @override
@@ -118,7 +132,7 @@ class NbAppBar extends StatelessWidget implements PreferredSizeWidget {
           Container(
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: colors.border, width: theme.borderWidth),
+                bottom: BorderSide(color: colors.border, width: _dividerHeight),
               ),
             ),
             child: bottom != null
