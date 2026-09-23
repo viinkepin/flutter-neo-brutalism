@@ -64,6 +64,7 @@ class NbChip extends StatelessWidget {
     this.onDeleted,
     this.leading,
     this.activeColor,
+    this.activeForegroundColor,
     this.enabled = true,
   });
 
@@ -85,6 +86,12 @@ class NbChip extends StatelessWidget {
   /// Active (selected) fill color. Defaults to [NbColorScheme.primary].
   final Color? activeColor;
 
+  /// Text/icon color while selected. Defaults to
+  /// [NbColorScheme.primaryForeground]. Set this when [activeColor] (or the
+  /// theme primary) is dark enough that the default foreground stops
+  /// reading — e.g. white on a saturated green.
+  final Color? activeForegroundColor;
+
   final bool enabled;
 
   @override
@@ -98,7 +105,7 @@ class NbChip extends StatelessWidget {
 
     final bg = isSelected ? effectiveActiveColor : colors.surface;
     final fg = isSelected
-        ? colors.primaryForeground
+        ? (activeForegroundColor ?? colors.primaryForeground)
         : isEnabled
             ? colors.foreground
             : colors.mutedForeground;

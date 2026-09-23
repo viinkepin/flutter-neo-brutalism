@@ -714,6 +714,10 @@ For circle shape with small `size` (< 120), keep `hint` short — it renders as 
 - `input` — shows × remove button; use for tag lists
 - `display` — read-only, no interaction
 
+`NbChip.activeForegroundColor` — text/icon color while selected (default theme
+`primaryForeground`). Set when `activeColor`/theme primary is dark enough that
+the default foreground stops reading (e.g. white text on saturated green).
+
 `NbChipGroup<T>` manages selection state externally:
 ```dart
 NbChipGroup<String>(

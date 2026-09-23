@@ -679,6 +679,7 @@ NbChip(
 | `leading` | `Widget?` | — | Icon before label |
 | `disabled` | `bool` | `false` | Greyed-out, non-interactive |
 | `activeColor` | `Color?` | theme primary | Fill color when selected |
+| `activeForegroundColor` | `Color?` | theme primaryForeground | Text/icon color when selected — set when the active fill is dark enough that the default foreground stops reading |
 
 ### NbChipGroup
 
